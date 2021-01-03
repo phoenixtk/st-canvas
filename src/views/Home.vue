@@ -27,14 +27,17 @@ export default {
 
     let dArr = [d1, d2, d3, d4, d5, d6, d7, d8, d9, d10]
 
+    const group = new Group();
+
     for (const d of dArr) {
       const sp = new SvgPath(d)
-      console.log(sp)
+      group.append(sp);
+      // console.log(sp)
       const [cx, cy] = sp.center
 
       const context = this.$refs.stcanvas.getContext('2d')
 
-      sp.save()
+      let ret =  sp.save()
               .beginPath()
               // .translate(-cx, -cy)
               // .rotate(45)
@@ -45,6 +48,7 @@ export default {
               // .lineWidth(3)
               .to(context)
               .stroke()
+      console.log(ret);
     }
 
 

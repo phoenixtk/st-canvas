@@ -1,4 +1,4 @@
-# st-canvas
+# st-canvas get a plan to be a editor
 
 ## Project setup
 ```
@@ -15,5 +15,7 @@ yarn serve
 yarn build
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Facts
+spritejs https://spritejs.org/#/
+
+fabricjs http://fabricjs.com/
