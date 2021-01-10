@@ -1,3 +1,5 @@
+const path = require("path");
+
 module.exports = {  // 选项  //  基本路径
   publicPath: "./",  //  构建时的输出目录
   outputDir: "dist",  //  放置静态资源的目录
@@ -20,9 +22,44 @@ module.exports = {  // 选项  //  基本路径
   productionSourceMap: true,  //  设置生成的 HTML 中 <link rel="stylesheet"> 和 <script> 标签的 crossorigin 属性。
   crossorigin: "",  //  在生成的 HTML 中的 <link rel="stylesheet"> 和 <script> 标签上启用 Subresource Integrity (SRI)。
   integrity: false,  //  调整内部的 webpack 配置
-  configureWebpack: () => {
+  configureWebpack: (config) => {
+    Object.assign(config, {
+      // 开发生产共同配置
+
+      // externals: {
+      //   'vue': 'Vue',
+      //   'element-ui': 'ELEMENT',
+      //   'vue-router': 'VueRouter',
+      //   'vuex': 'Vuex'
+      // } // 防止将某些 import 的包(package)打包到 bundle 中，而是在运行时(runtime)再去从外部获取这些扩展依赖(用于csdn引入)
+      resolve: {
+        extensions: [".js", ".vue", ".json"], //文件优先解析后缀名顺序
+        alias: {
+          "@": path.resolve(__dirname, "./src"),
+        }, // 别名配置
+        plugins: []
+      }
+    });
   }, //(Object | Function)
-  chainWebpack: () => {
+  chainWebpack: (config) => {
+    /*config
+      .module
+      .rule('svg')
+      .clear()*/
+    config
+      .module
+      .rule('svg')
+      .test(/\.(svg)(\?.*)?$/)
+      .include.add(path.resolve('src/assets/fileloader'))
+      .end()
+      .use('file-loader')
+      .loader('file-loader')
+      .options({
+        name: 'img/[name].[hash:8].[ext]'
+      }).end();
+
+
+
   },  // 配置 webpack-dev-server 行为。
   devServer: {
     open: process.platform === 'darwin',
