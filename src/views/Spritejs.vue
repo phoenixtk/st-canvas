@@ -51,7 +51,7 @@
         const group = new Group();
 
         group.attr({
-          size: [1024, 1024],
+          size: [3024, 3024],
           pos: [0, 0],
           anchor: [0.5, 0.5],
           bgcolor: '#cec',

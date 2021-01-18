@@ -6,7 +6,7 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/',
+    path: '/spritejs',
     name: 'Spritejs',
     component: () => import(/* webpackChunkName: "spritejs" */ '../views/Spritejs.vue')
   },
