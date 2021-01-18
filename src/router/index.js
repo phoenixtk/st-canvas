@@ -8,7 +8,7 @@ const routes = [
   {
     path: '/',
     name: 'Spritejs',
-    component: () => import(/* webpackChunkName: "home" */ '../views/Spritejs.vue')
+    component: () => import(/* webpackChunkName: "spritejs" */ '../views/Spritejs.vue')
   },
   {
     path: '/home',
