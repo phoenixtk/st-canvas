@@ -6,20 +6,10 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/spritejs',
+    path: '/',
     name: 'Spritejs',
     component: () => import(/* webpackChunkName: "spritejs" */ '../views/Spritejs.vue')
   },
-  {
-    path: '/home',
-    name: 'Home',
-    component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue')
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
 ]
 
 const router = new VueRouter({
