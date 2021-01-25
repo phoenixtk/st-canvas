@@ -36,6 +36,7 @@ export default {
       const layer = scene.layer();
       const group = new Group();
       group.attr({
+        normalize: true,
         size: [1222, 1024],
         pos: [300, 300],
         anchor: [0, 0],
@@ -82,12 +83,12 @@ export default {
       if (this.mode === "edit") {
         group.addEventListener("mousedown", async (evt) => {
           console.log(evt);
+          // console.log(`鼠标位置：\n相对于锚点: ${group.getOffsetPosition(evt.x, evt.y).map(Math.round)}`);
+          let scale = group.attributes.scale;
+          let sp = group.getOffsetPosition(evt.x, evt.y);
+          console.log(group.attributes.pos, evt.x, evt.y, scale[0] * sp[0], scale[1] * sp[1]);
           this.mousedownObj.target = group;
-          this.mousedownObj.startX = evt.layerX;
-          this.mousedownObj.startY = evt.layerY;
-          // console.log(group);
-          this.mousedownObj.width = group.attributes.size[0] * group.attributes.scale[0];
-          this.mousedownObj.height = group.attributes.size[1] * group.attributes.scale[1];
+          this.mousedownObj.offsetPosition = [scale[0] * sp[0], scale[1] * sp[1]];
         });
 
         // buttonNormal.removeAllListeners('click');
@@ -96,7 +97,7 @@ export default {
           // console.log(evt);
           if (this.mousedownObj.target) {
             group.attr({
-              pos: [evt.layerX - this.mousedownObj.width / 2, evt.layerY - this.mousedownObj.height / 2],
+              pos: [evt.x - this.mousedownObj.offsetPosition[0], evt.y - this.mousedownObj.offsetPosition[1]],
             });
             delete this.mousedownObj.target
           }

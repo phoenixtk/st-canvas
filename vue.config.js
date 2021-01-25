@@ -65,12 +65,19 @@ module.exports = {
     config.plugins.delete('preload') // TODO: need test
     config.plugins.delete('prefetch') // TODO: need test
 
-    /* config.module
-      .rule('raw')
-      .test(/\.(txt|xml)$/)
-      .use('raw-loader')
-      .loader('raw-loader')
-      .end() */
+    config.module
+      .rule('svg')
+      .clear()
+      .end()
+    config.module
+      .rule('svg')
+      .test(/\.svg$/)
+      .use('file-loader')
+      .loader('file-loader')
+      .options({
+        name: 'static/img/[name].[ext]'
+      })
+      .end()
 
     // set preserveWhitespace
     config.module

@@ -10,6 +10,7 @@
     "canvas": "^2.6.1",
     "core-js": "^3.8.1",
     "element-ui": "^2.15.0",
+    "raw-loader": "^4.0.2",
     "register-service-worker": "^1.7.1",
     "spritejs": "^3.7.28",
     "vue": "^2.6.11",

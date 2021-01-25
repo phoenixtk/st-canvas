@@ -1,14 +1,13 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Spritejs from '../views/Spritejs.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Spritejs',
-    component: () => import(/* webpackChunkName: "spritejs" */ '../views/Spritejs.vue')
+    name: 'StEditor',
+    component: () => import(/* webpackChunkName: "stEditor" */ '../views/StEditor.vue')
   },
 ]
 
