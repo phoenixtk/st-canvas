@@ -66,6 +66,7 @@
 <script>
 import * as spritejs from "spritejs";
 const { Scene, Sprite, Group, Path } = spritejs;
+import StSvgSprite from "./StSvgSprite";
 
 export default {
   name: "StEditor",
@@ -111,7 +112,8 @@ export default {
       this.layer = scene.layer();
     },
     addGroup(stKey, pos) {
-      const group = new Group();
+
+      /* const group = new Group();
       if (stKey === "cat1") {
         group.attr({
           normalize: true,
@@ -197,7 +199,24 @@ export default {
           });
         }
         this.layer.append(group);
-      }
+      } */
+
+      const stSvgSprite = new StSvgSprite({stKey: stKey, pos: pos, mode: 'edit'});
+
+      this.layer.addEventListener("mouseup", (evt) => {
+        // console.log(evt);
+        if (window.mousedownObj) {
+          const mdo = window.mousedownObj
+          mdo.target.attr({
+            pos: [
+              evt.x - mdo.offsetPosition[0],
+              evt.y - mdo.offsetPosition[1],
+            ],
+          });
+          delete window.mousedownObj
+        }
+      });
+      this.layer.append(stSvgSprite);
     },
     showLeftDrawer() {
       this.leftDrawerVisible = true;
