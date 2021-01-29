@@ -110,21 +110,30 @@ export default {
       });
 
       this.layer = scene.layer();
+      if (this.mode === 'edit') {
+        this.layer.addEventListener("mouseup", (evt) => {
+          if (window.mousedownObj) {
+            const mdo = window.mousedownObj
+            mdo.target.attr({
+              pos: [
+                evt.x - mdo.offsetPosition[0],
+                evt.y - mdo.offsetPosition[1],
+              ],
+            });
+            delete window.mousedownObj
+          }
+        });
+        this.layer.addEventListener("click", (evt) => {
+          // get sprites
+          for (const child of this.layer.children) {
+            child.active(false)
+          }
+          // set sprites unactive
+        });
+      }
     },
-    addGroup(stKey, pos) {
-      const stSvgSprite = new StSvgSprite({stKey: stKey, pos: pos, mode: 'edit'});
-      this.layer.addEventListener("mouseup", (evt) => {
-        if (window.mousedownObj) {
-          const mdo = window.mousedownObj
-          mdo.target.attr({
-            pos: [
-              evt.x - mdo.offsetPosition[0],
-              evt.y - mdo.offsetPosition[1],
-            ],
-          });
-          delete window.mousedownObj
-        }
-      });
+    addSvgSprite(stKey, pos) {
+      const stSvgSprite = new StSvgSprite({stKey: stKey, pos: pos, mode: this.mode});
       this.layer.append(stSvgSprite);
     },
     showLeftDrawer() {
@@ -134,6 +143,9 @@ export default {
       this.leftDrawerVisible = false;
     },
     componentsSvgDrag(ev) {
+      if (this.mode !== 'edit') {
+        return
+      }
       // console.log(ev);
       function getStKey(ev) {
         for (const attribute of ev.target.attributes) {
@@ -152,6 +164,9 @@ export default {
       ev.dataTransfer.setData("fromOffsetY", ev.offsetY);
     },
     drop(ev) {
+      if (this.mode !== 'edit') {
+        return
+      }
       const act = ev.dataTransfer.getData("act");
       const stKey = ev.dataTransfer.getData("stKey");
       const fromOffsetX = parseFloat(ev.dataTransfer.getData("fromOffsetX"));
@@ -173,7 +188,7 @@ export default {
       }
       // console.log(targetX, targetY);
 
-      this.addGroup(stKey, [targetX, targetY]);
+      this.addSvgSprite(stKey, [targetX, targetY]);
     },
     allowDrop(ev) {
       ev.preventDefault();
@@ -205,7 +220,7 @@ export default {
   //生命周期 - 挂载完成（可以访问DOM元素）",html模板已渲染
   mounted() {
     this.playerInit();
-    this.addGroup("cat1", [300, 300]);
+    this.addSvgSprite("cat1", [300, 300]);
   },
   //生命周期 - 更新之后",数据模型已更新,html模板已更新
   updated() {},
