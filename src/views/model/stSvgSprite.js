@@ -1,8 +1,9 @@
 import { Group, Path } from "spritejs";
 import getSvgPath from "../utils/svgMock";
-import ctrlBlock from "../utils/ctrlBlock";
+// import ctrlBlock from "../utils/ctrlBlock";
+import tool from "../utils/tool";
 
-const setDefault = Symbol.for('spritejs_setAttribute');
+// const setDefault = Symbol.for('spritejs_setAttribute');
 
 const scaleObj = {
   COMPONENTS_SVG_SCALE: 50 / 1024,
@@ -11,7 +12,7 @@ const scaleObj = {
 
 
 class StSvgSprite extends Group {
-  constructor(attrs = {}) {
+  constructor(attrs = {}, _vue) {
     attrs = Object.assign({
       normalize: true,
       size: [1222, 1024],
@@ -25,6 +26,8 @@ class StSvgSprite extends Group {
     }, attrs)
     
     super(attrs);
+    this.$vue = _vue
+    this.id = tool.getUuid();
     let dArr = getSvgPath(attrs.stKey);
     for (const item of dArr) {
       const path = new Path();
@@ -62,7 +65,9 @@ class StSvgSprite extends Group {
       this.addEventListener('click', (evt) => {
         for (const child of this.layer.children) {
           if (child !== this) {
-            child.active(false)
+            if (typeof child.active === "function") {
+              child.active(false)
+            }
           }
         }
         evt.stopPropagation();
@@ -88,10 +93,30 @@ class StSvgSprite extends Group {
     if (b) {
       this.attributes.borderWidth = 1 / this.attributes.scale[0],
       this.attributes.borderColor = 'blue'
+      this.actived = true
+      // 暂时只处理一个选中的时候
+      this.$vue.showProp(this)
     } else {
       this.attributes.borderWidth = 0,
       this.attributes.borderColor = 'white'
+      this.actived = false
+      this.$vue.unactivatedData(this)
     }
+  }
+
+  set attr(attr) {
+    // 暂时暴露2个属性 pos scale
+    console.log(attr);
+    if (attr.pos) {
+      this.attributes.pos = attr.pos
+    }
+    if (attr.scale) {
+      this.attributes.scale = attr.scale
+    }
+  }
+
+  get attr() {
+    return this.attributes;
   }
 }
 
