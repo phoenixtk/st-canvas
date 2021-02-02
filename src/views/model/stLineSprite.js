@@ -24,13 +24,16 @@ class StLineSprite extends Polyline {
       }
     }
     attrs = Object.assign({
+      normalize: true,
       strokeColor: lineCfg.strokeColor,
       lineWidth: lineCfg.lineWidth,
       points: getDefalutPoints(attrs.stKey),
+      smooth: true,
+      lineJoin: 'bevel'
     }, attrs)
 
     super(attrs);
-    this.$vue = _vue
+    this.$editor = _vue
     this.id = tool.getUuid();
     
 
@@ -83,21 +86,26 @@ class StLineSprite extends Polyline {
 
   active(b) {
     if (b) {
-      this.attributes.borderWidth = 1 / this.attributes.scale[0],
-      this.attributes.borderColor = 'blue'
+      this.attributes.strokeColor = "blue",
+      this.attributes.lineWidth = 4
       this.actived = true
       // 暂时只处理一个选中的时候
-      this.$vue.showProp(this)
+      this.$editor.showProp(this)
     } else {
-      this.attributes.borderWidth = 0,
-      this.attributes.borderColor = 'white'
+      this.attributes.strokeColor = "black",
+      this.attributes.lineWidth = 2
       this.actived = false
-      this.$vue.unactivatedData(this)
+      this.$editor.unactivatedData(this)
     }
   }
 
+  del() {
+    console.log('this.remove()');
+    this.remove()
+  }
+
   set attr(attr) {
-    // 暂时暴露2个属性 pos scale
+    // 暂时支持2个属性 pos scale
     // console.log(attr);
     if (attr.pos) {
       this.attributes.pos = attr.pos

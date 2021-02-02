@@ -67,21 +67,37 @@
           </el-collapse>
         </el-tab-pane>
         <el-tab-pane label="属性" name="props">
-          <el-row>
+          <el-row v-show="propsDis.pos">
             <el-col :span="5">位置：</el-col>
-            <el-col :span="4" style="text-align:right;padding-right:10px;">x</el-col>
+            <el-col :span="4" style="text-align: right; padding-right: 10px"
+              >x</el-col
+            >
             <el-col :span="5">
-              <el-input size="mini" v-model="propsForm.pos.x" @change="(val)=>propsFormChange(val, 'posx')"></el-input>
+              <el-input
+                size="mini"
+                v-model="propsForm.pos.x"
+                @change="(val) => propsFormChange(val, 'posx')"
+              ></el-input>
             </el-col>
-            <el-col :span="4" style="text-align:right;padding-right:10px;">y</el-col>
+            <el-col :span="4" style="text-align: right; padding-right: 10px"
+              >y</el-col
+            >
             <el-col :span="5">
-              <el-input size="mini" v-model="propsForm.pos.y" @change="(val)=>propsFormChange(val, 'posy')"></el-input>
+              <el-input
+                size="mini"
+                v-model="propsForm.pos.y"
+                @change="(val) => propsFormChange(val, 'posy')"
+              ></el-input>
             </el-col>
           </el-row>
-          <el-row>
+          <el-row v-show="propsDis.scale">
             <el-col :span="6"> 缩放： </el-col>
             <el-col :span="18">
-              <el-input size="mini" v-model="propsForm.scale" @change="(val)=>propsFormChange(val, 'scale')"></el-input>
+              <el-input
+                size="mini"
+                v-model="propsForm.scale"
+                @change="(val) => propsFormChange(val, 'scale')"
+              ></el-input>
             </el-col>
           </el-row>
         </el-tab-pane>
@@ -124,6 +140,10 @@ export default {
       tabsActive: "comps",
       svgArr: [],
       lineArr: [],
+      propsDis: {
+        pos: false,
+        scale: false
+      },
       scaleObj: {
         COMPONENTS_SVG_SCALE: 50 / 1024,
         VIEWBOX_SCALE_INIT: 64 / 1024,
@@ -145,7 +165,7 @@ export default {
           x: 0,
           y: 0,
         },
-        scale: 0
+        scale: 0,
       },
       activatedItems: [],
     };
@@ -159,7 +179,7 @@ export default {
   watch: {},
   //方法集合",
   methods: {
-    playerInit() {
+    editorInit() {
       const container = this.$refs[this.stEditorCanvasRef];
       const scene = new Scene({
         container,
@@ -180,13 +200,13 @@ export default {
                 evt.y - mdo.offsetPosition[1],
               ],
             };
-            this.showProp(mdo.target)
+            this.showProp(mdo.target);
             delete window.mousedownObj;
           }
         });
         this.layer.addEventListener("click", (evt) => {
-          this.tabsActive = 'comps'
-          this.unactiveAll()
+          this.tabsActive = "comps";
+          this.unactiveAll();
         });
       }
     },
@@ -209,8 +229,8 @@ export default {
         this
       );
       this.layer.append(stSvgSprite);
-      this.unactiveAll()
-      stSvgSprite.active(true)
+      this.unactiveAll();
+      stSvgSprite.active(true);
     },
     addLineSprite(stKey, pos) {
       const stLineSprite = new StLineSprite(
@@ -221,8 +241,9 @@ export default {
         },
         this
       );
-
       this.layer.append(stLineSprite);
+      this.unactiveAll();
+      stLineSprite.active(true);
     },
     tabsActiveClick(tab, event) {
       // console.log(tab, event);
@@ -290,15 +311,22 @@ export default {
     showProp(obj) {
       this.tabsActive = "props";
       if (obj.constructor.name === "StSvgSprite") {
-        // this.propType = 'StSvgSprite'
-        this.activatedItems.push(obj)
-        this.propsForm.pos.x = obj.attr.pos[0]
-        this.propsForm.pos.y = obj.attr.pos[1]
-        this.propsForm.scale = obj.attr.scale[0]
+        this.activatedItems.push(obj);
+        this.propsForm.pos.x = obj.attr.pos[0];
+        this.propsForm.pos.y = obj.attr.pos[1];
+        this.propsForm.scale = obj.attr.scale[0];
+
+        this.propsDis.pos = true
+        this.propsDis.scale = true
+      } else if (obj.constructor.name === "StLineSprite") {
+        this.activatedItems.push(obj);
+        this.propsForm.pos.x = obj.attr.pos[0];
+        this.propsForm.pos.y = obj.attr.pos[1];
+
+        this.propsDis.pos = true
+        this.propsDis.scale = false
       }
 
-      // console.log(this.layer.children);
-      // console.log(this.activatedItems[0]);
     },
     unactivatedData(obj) {
       let retIndex = -1;
@@ -311,24 +339,24 @@ export default {
           }
         }
       }
-      this.activatedItems.splice(retIndex, 1)
+      this.activatedItems.splice(retIndex, 1);
     },
     propsFormChange(val, type) {
       // console.log(val, type);
       if (this.activatedItems && this.activatedItems.length > 0) {
         for (const item of this.activatedItems) {
-          let attr = {}
-          attr.pos = []
-          if (type === 'posx') {
-            attr.pos[0] = parseFloat(val)
-            attr.pos[1] = this.propsForm.pos.y
-          } else if (type === 'posy') {
-            attr.pos[0] = this.propsForm.pos.x
-            attr.pos[1] = parseFloat(val)
-          } else if (type === 'scale') {
-            attr.scale = parseFloat(val)
+          let attr = {};
+          attr.pos = [];
+          if (type === "posx") {
+            attr.pos[0] = parseFloat(val);
+            attr.pos[1] = this.propsForm.pos.y;
+          } else if (type === "posy") {
+            attr.pos[0] = this.propsForm.pos.x;
+            attr.pos[1] = parseFloat(val);
+          } else if (type === "scale") {
+            attr.scale = parseFloat(val);
           }
-          item.attr = attr
+          item.attr = attr;
         }
       }
     },
@@ -366,11 +394,26 @@ export default {
     }
   },
   mounted() {
-    this.playerInit();
+    this.editorInit();
     // this.addSvgSprite("cat1", [300, 300]);
+
+    window.onkeyup = (e) => {
+      if (e.which === 46) {
+        if (this.activatedItems && this.activatedItems.length > 0) {
+          for (let i = 0; i < this.activatedItems.length; i++) {
+            const item = this.activatedItems[i];
+            item.del();
+          }
+        }
+        this.activatedItems = []
+        this.tabsActive = "comps";
+      }
+    };
   },
   updated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    window.onkeyup = null;
+  },
   //如果页面有keep-alive缓存功能，这个函数会触发",
   activated() {},
 };

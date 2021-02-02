@@ -104,6 +104,11 @@ class StSvgSprite extends Group {
     }
   }
 
+  del() {
+    // this.removeAllChildren()
+    this.remove()
+  }
+
   set attr(attr) {
     // 暂时暴露2个属性 pos scale
     // console.log(attr);
