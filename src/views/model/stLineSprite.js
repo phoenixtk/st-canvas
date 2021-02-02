@@ -1,46 +1,38 @@
-import { Group, Path } from "spritejs";
-import getSvgPath from "../utils/svgMock";
-// import ctrlBlock from "../utils/ctrlBlock";
+import { Polyline } from "spritejs";
 import tool from "../utils/tool";
 
 // const setDefault = Symbol.for('spritejs_setAttribute');
 
-const scaleObj = {
-  COMPONENTS_SVG_SCALE: 50 / 1024,
-  VIEWBOX_SCALE_INIT: 64 / 1024,
-};
+const lineCfg = {
+  l1broken: {
+    points: [200, 0],
+  },
+  l3broken: {
+    points: [100, 0, 100, 100, 200, 100],
+  },
+  strokeColor: "black",
+  lineWidth: 2,
+}
 
-
-class StSvgSprite extends Group {
+class StLineSprite extends Polyline {
   constructor(attrs = {}, _vue) {
+    function getDefalutPoints(stKey) {
+      if (stKey === 'polyline1broken') {
+        return [0, 0, ...lineCfg.l1broken.points]
+      } else if (stKey === 'polyline3broken') {
+        return [0, 0, ...lineCfg.l3broken.points]
+      }
+    }
     attrs = Object.assign({
-      normalize: true,
-      size: [1222, 1024],
-      anchor: [0, 0],
-      // bgcolor: '#cec', // just for test
-      borderRadius: 0,
-      scale: [
-        scaleObj.VIEWBOX_SCALE_INIT,
-        scaleObj.VIEWBOX_SCALE_INIT,
-      ], // svg width(height) divide svg viewBox width(height)
+      strokeColor: lineCfg.strokeColor,
+      lineWidth: lineCfg.lineWidth,
+      points: getDefalutPoints(attrs.stKey),
     }, attrs)
-    
+
     super(attrs);
     this.$vue = _vue
     this.id = tool.getUuid();
-    let dArr = getSvgPath(attrs.stKey);
-    for (const item of dArr) {
-      const path = new Path();
-      path.attr({
-        d: item.d,
-        // scale: 3,
-        // anchor: [0, 0.5],
-        // strokeColor: 'red',
-        fillColor: item.fill,
-        // rotate: i * 60,
-      });
-      this.append(path);
-    }
+    
 
     if(attrs.mode === 'edit') {
       this.addEventListener("mousedown", (evt) => {
@@ -120,4 +112,4 @@ class StSvgSprite extends Group {
   }
 }
 
-export default StSvgSprite
+export default StLineSprite

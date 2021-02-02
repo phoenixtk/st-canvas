@@ -71,17 +71,17 @@
             <el-col :span="5">位置：</el-col>
             <el-col :span="4" style="text-align:right;padding-right:10px;">x</el-col>
             <el-col :span="5">
-              <el-input size="mini" v-model="propsForm.pos.x" @change="propsFormPosXChange"></el-input>
+              <el-input size="mini" v-model="propsForm.pos.x" @change="(val)=>propsFormChange(val, 'posx')"></el-input>
             </el-col>
             <el-col :span="4" style="text-align:right;padding-right:10px;">y</el-col>
             <el-col :span="5">
-              <el-input size="mini" v-model="propsForm.pos.y" @change="propsFormPosYChange"></el-input>
+              <el-input size="mini" v-model="propsForm.pos.y" @change="(val)=>propsFormChange(val, 'posy')"></el-input>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="6"> 缩放： </el-col>
             <el-col :span="18">
-              <el-input size="mini" v-model="propsForm.scale"></el-input>
+              <el-input size="mini" v-model="propsForm.scale" @change="(val)=>propsFormChange(val, 'scale')"></el-input>
             </el-col>
           </el-row>
         </el-tab-pane>
@@ -103,6 +103,7 @@
 import * as spritejs from "spritejs";
 const { Scene, Sprite, Group, Path, Polyline } = spritejs;
 import StSvgSprite from "./model/stSvgSprite";
+import StLineSprite from "./model/stLineSprite";
 import tool from "./utils/tool";
 
 export default {
@@ -172,9 +173,7 @@ export default {
         this.layer.addEventListener("mouseup", (evt) => {
           if (window.mousedownObj) {
             const mdo = window.mousedownObj;
-
-            console.log(mdo.target);
-
+            // console.log(mdo.target);
             mdo.target.attr = {
               pos: [
                 evt.x - mdo.offsetPosition[0],
@@ -186,14 +185,18 @@ export default {
           }
         });
         this.layer.addEventListener("click", (evt) => {
-          // get sprites
-          for (const child of this.layer.children) {
-            // set sprites unactive
-            if (typeof child.active === "function") {
-              child.active(false);
-            }
-          }
+          this.tabsActive = 'comps'
+          this.unactiveAll()
         });
+      }
+    },
+    unactiveAll() {
+      // get sprites
+      for (const child of this.layer.children) {
+        // set sprites unactive
+        if (typeof child.active === "function") {
+          child.active(false);
+        }
       }
     },
     addSvgSprite(stKey, pos) {
@@ -206,30 +209,20 @@ export default {
         this
       );
       this.layer.append(stSvgSprite);
+      this.unactiveAll()
+      stSvgSprite.active(true)
     },
     addLineSprite(stKey, pos) {
-      let line = null;
-      if (stKey === "line") {
-        let cfg = this.lineCfg.LINE;
-        line = new Polyline({
-          id: tool.getUuid(),
+      const stLineSprite = new StLineSprite(
+        {
+          stKey: stKey,
           pos: pos,
-          points: [0, 0, ...cfg.points],
-          strokeColor: cfg.strokeColor,
-          lineWidth: cfg.lineWidth,
-        });
-      } else if (stKey === "polyline") {
-        let cfg = this.lineCfg.POLYLINE;
-        line = new Polyline({
-          id: tool.getUuid(),
-          pos: pos,
-          points: [0, 0, ...cfg.points],
-          strokeColor: cfg.strokeColor,
-          lineWidth: cfg.lineWidth,
-        });
-      }
+          mode: this.mode,
+        },
+        this
+      );
 
-      this.layer.append(line);
+      this.layer.append(stLineSprite);
     },
     tabsActiveClick(tab, event) {
       // console.log(tab, event);
@@ -305,7 +298,7 @@ export default {
       }
 
       // console.log(this.layer.children);
-      console.log(this.activatedItems[0]);
+      // console.log(this.activatedItems[0]);
     },
     unactivatedData(obj) {
       let retIndex = -1;
@@ -320,28 +313,25 @@ export default {
       }
       this.activatedItems.splice(retIndex, 1)
     },
-    propsFormPosXChange(val) {
+    propsFormChange(val, type) {
+      // console.log(val, type);
       if (this.activatedItems && this.activatedItems.length > 0) {
         for (const item of this.activatedItems) {
           let attr = {}
           attr.pos = []
-          attr.pos[0] = parseFloat(val)
-          attr.pos[1] = this.propsForm.pos.y
+          if (type === 'posx') {
+            attr.pos[0] = parseFloat(val)
+            attr.pos[1] = this.propsForm.pos.y
+          } else if (type === 'posy') {
+            attr.pos[0] = this.propsForm.pos.x
+            attr.pos[1] = parseFloat(val)
+          } else if (type === 'scale') {
+            attr.scale = parseFloat(val)
+          }
           item.attr = attr
         }
       }
     },
-    propsFormPosYChange(val) {
-      if (this.activatedItems && this.activatedItems.length > 0) {
-        for (const item of this.activatedItems) {
-          let attr = {}
-          attr.pos = []
-          attr.pos[0] = this.propsForm.pos.x
-          attr.pos[1] = parseFloat(val)
-          item.attr = attr
-        }
-      }
-    }
   },
   created() {
     // ============= svgs ==============
@@ -367,7 +357,7 @@ export default {
     }
 
     // ============= lines ==============
-    let lineKeyArr = ["line", "polyline"];
+    let lineKeyArr = ["polyline1broken", "polyline3broken"];
     for (const lineKey of lineKeyArr) {
       this.lineArr.push({
         key: lineKey,
