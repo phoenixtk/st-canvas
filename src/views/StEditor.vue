@@ -100,6 +100,75 @@
               ></el-input>
             </el-col>
           </el-row>
+          <el-row v-show="propsDis.point1">
+            <el-col :span="5">顶点1：</el-col>
+            <el-col :span="4" style="text-align: right; padding-right: 10px"
+              >x</el-col
+            >
+            <el-col :span="5">
+              <el-input
+                size="mini"
+                v-model="propsForm.points.p1x"
+                @change="(val) => propsFormChange(val, 'points1x')"
+              ></el-input>
+            </el-col>
+            <el-col :span="4" style="text-align: right; padding-right: 10px"
+              >y</el-col
+            >
+            <el-col :span="5">
+              <el-input
+                size="mini"
+                v-model="propsForm.points.p1y"
+                @change="(val) => propsFormChange(val, 'points1y')"
+              ></el-input>
+            </el-col>
+          </el-row>
+          <el-row v-show="propsDis.point2">
+            <el-col :span="5">顶点2：</el-col>
+            <el-col :span="4" style="text-align: right; padding-right: 10px"
+              >x</el-col
+            >
+            <el-col :span="5">
+              <el-input
+                size="mini"
+                v-model="propsForm.points.p2x"
+                @change="(val) => propsFormChange(val, 'points2x')"
+              ></el-input>
+            </el-col>
+            <el-col :span="4" style="text-align: right; padding-right: 10px"
+              >y</el-col
+            >
+            <el-col :span="5">
+              <el-input
+                size="mini"
+                v-model="propsForm.points.p2y"
+                @change="(val) => propsFormChange(val, 'points2y')"
+              ></el-input>
+            </el-col>
+          </el-row>
+          <el-row v-show="propsDis.point3">
+            <el-col :span="5">顶点3：</el-col>
+            <el-col :span="4" style="text-align: right; padding-right: 10px"
+              >x</el-col
+            >
+            <el-col :span="5">
+              <el-input
+                size="mini"
+                v-model="propsForm.points.p3x"
+                @change="(val) => propsFormChange(val, 'points3x')"
+              ></el-input>
+            </el-col>
+            <el-col :span="4" style="text-align: right; padding-right: 10px"
+              >y</el-col
+            >
+            <el-col :span="5">
+              <el-input
+                size="mini"
+                v-model="propsForm.points.p3y"
+                @change="(val) => propsFormChange(val, 'points3y')"
+              ></el-input>
+            </el-col>
+          </el-row>
         </el-tab-pane>
         <el-tab-pane label="动画" name="animation"> 动画 </el-tab-pane>
         <el-tab-pane label="业务" name="biz"> 定时任务补偿 </el-tab-pane>
@@ -117,17 +186,15 @@
 
 <script>
 import * as spritejs from "spritejs";
-const { Scene, Sprite, Group, Path, Polyline } = spritejs;
+const { Scene } = spritejs;
 import StSvgSprite from "./model/stSvgSprite";
 import StLineSprite from "./model/stLineSprite";
-import tool from "./utils/tool";
+// import tool from "./utils/tool";
 
 export default {
   name: "StEditor",
-  //import引入的组件需要注入到对象中才能使用",
   components: {},
   data() {
-    //这里存放数据",
     return {
       layer: null,
       leftDrawerVisible: true,
@@ -142,7 +209,10 @@ export default {
       lineArr: [],
       propsDis: {
         pos: false,
-        scale: false
+        scale: false,
+        point1: false,
+        point2: false,
+        point3: false,
       },
       scaleObj: {
         COMPONENTS_SVG_SCALE: 50 / 1024,
@@ -166,6 +236,14 @@ export default {
           y: 0,
         },
         scale: 0,
+        points: {
+          p1x: 0,
+          p1y: 0,
+          p2x: 0,
+          p2y: 0,
+          p3x: 0,
+          p3y: 0,
+        },
       },
       activatedItems: [],
     };
@@ -175,9 +253,7 @@ export default {
       return !this.leftDrawerVisible;
     },
   },
-  //监控data中的数据变化",
   watch: {},
-  //方法集合",
   methods: {
     editorInit() {
       const container = this.$refs[this.stEditorCanvasRef];
@@ -211,6 +287,7 @@ export default {
       }
     },
     unactiveAll() {
+      console.log('unactiveAll');
       // get sprites
       for (const child of this.layer.children) {
         // set sprites unactive
@@ -308,6 +385,27 @@ export default {
     allowDrop(ev) {
       ev.preventDefault();
     },
+    propsDisHandler(type) {
+      if (type === "StSvgSprite") {
+        this.propsDis.pos = true;
+        this.propsDis.scale = true;
+        this.propsDis.point1 = false;
+        this.propsDis.point2 = false;
+        this.propsDis.point3 = false;
+      } else if (type === "StLineSprite1b") {
+        this.propsDis.pos = true;
+        this.propsDis.scale = false;
+        this.propsDis.point1 = true;
+        this.propsDis.point2 = false;
+        this.propsDis.point3 = false;
+      } else if (type === "StLineSprite3b") {
+        this.propsDis.pos = true;
+        this.propsDis.scale = false;
+        this.propsDis.point1 = true;
+        this.propsDis.point2 = true;
+        this.propsDis.point3 = true;
+      }
+    },
     showProp(obj) {
       this.tabsActive = "props";
       if (obj.constructor.name === "StSvgSprite") {
@@ -315,18 +413,28 @@ export default {
         this.propsForm.pos.x = obj.attr.pos[0];
         this.propsForm.pos.y = obj.attr.pos[1];
         this.propsForm.scale = obj.attr.scale[0];
-
-        this.propsDis.pos = true
-        this.propsDis.scale = true
+        this.propsDisHandler("StSvgSprite");
       } else if (obj.constructor.name === "StLineSprite") {
         this.activatedItems.push(obj);
-        this.propsForm.pos.x = obj.attr.pos[0];
-        this.propsForm.pos.y = obj.attr.pos[1];
-
-        this.propsDis.pos = true
-        this.propsDis.scale = false
+        // console.log(obj.attr);
+        if (obj.attr.stKey === "polyline1broken") {
+          this.propsForm.pos.x = obj.attr.pos[0];
+          this.propsForm.pos.y = obj.attr.pos[1];
+          this.propsForm.points.p1x = obj.attr.points[2];
+          this.propsForm.points.p1y = obj.attr.points[3];
+          this.propsDisHandler("StLineSprite1b");
+        } else if (obj.attr.stKey === "polyline3broken") {
+          this.propsForm.pos.x = obj.attr.pos[0];
+          this.propsForm.pos.y = obj.attr.pos[1];
+          this.propsForm.points.p1x = obj.attr.points[2];
+          this.propsForm.points.p1y = obj.attr.points[3];
+          this.propsForm.points.p2x = obj.attr.points[4];
+          this.propsForm.points.p2y = obj.attr.points[5];
+          this.propsForm.points.p3x = obj.attr.points[6];
+          this.propsForm.points.p3y = obj.attr.points[7];
+          this.propsDisHandler("StLineSprite3b");
+        }
       }
-
     },
     unactivatedData(obj) {
       let retIndex = -1;
@@ -339,22 +447,46 @@ export default {
           }
         }
       }
-      this.activatedItems.splice(retIndex, 1);
+      if (retIndex > -1) {
+        this.activatedItems.splice(retIndex, 1);
+      }
     },
     propsFormChange(val, type) {
-      // console.log(val, type);
+      function setPoint(item, attr, index, val) {
+        let points = []
+          for (let i = 0; i < item.attr.points.length; i++) {
+            const point = item.attr.points[i];
+            if (i === index) {
+              points.push(parseFloat(val));
+            } else {
+              points.push(point);
+            }
+          }
+          attr.points = points
+      }
       if (this.activatedItems && this.activatedItems.length > 0) {
         for (const item of this.activatedItems) {
-          let attr = {};
-          attr.pos = [];
+          let attr = {}
           if (type === "posx") {
+            attr.pos = item.attr.pos
             attr.pos[0] = parseFloat(val);
-            attr.pos[1] = this.propsForm.pos.y;
           } else if (type === "posy") {
-            attr.pos[0] = this.propsForm.pos.x;
+            attr.pos = item.attr.pos
             attr.pos[1] = parseFloat(val);
           } else if (type === "scale") {
             attr.scale = parseFloat(val);
+          } else if (type === "points1x") {
+            setPoint(item, attr, 2, val)
+          } else if (type === "points1y") {
+            setPoint(item, attr, 3, val)
+          } else if (type === "points2x") {
+            setPoint(item, attr, 4, val)
+          } else if (type === "points2y") {
+            setPoint(item, attr, 5, val)
+          } else if (type === "points3x") {
+            setPoint(item, attr, 6, val)
+          } else if (type === "points3y") {
+            setPoint(item, attr, 7, val)
           }
           item.attr = attr;
         }
@@ -399,13 +531,16 @@ export default {
 
     window.onkeyup = (e) => {
       if (e.which === 46) {
+        console.log(this.activatedItems);
         if (this.activatedItems && this.activatedItems.length > 0) {
           for (let i = 0; i < this.activatedItems.length; i++) {
             const item = this.activatedItems[i];
+            console.log('item.del()');
+            console.log(item);
             item.del();
           }
         }
-        this.activatedItems = []
+        this.activatedItems = [];
         this.tabsActive = "comps";
       }
     };
@@ -414,7 +549,6 @@ export default {
   beforeDestroy() {
     window.onkeyup = null;
   },
-  //如果页面有keep-alive缓存功能，这个函数会触发",
   activated() {},
 };
 </script>
@@ -477,6 +611,7 @@ export default {
 </style>
 <style lang="scss">
 .st-editor {
+  font-size: 14px;
   .el-tabs__content {
     height: 100%;
   }

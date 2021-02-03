@@ -53,7 +53,6 @@ class StSvgSprite extends Group {
             scale[1] * sp[1],
           ]
         }
-        this.active(true);
         evt.stopPropagation();
       });
   
@@ -68,6 +67,8 @@ class StSvgSprite extends Group {
             if (typeof child.active === "function") {
               child.active(false)
             }
+          } else {
+            this.active(true);
           }
         }
         evt.stopPropagation();

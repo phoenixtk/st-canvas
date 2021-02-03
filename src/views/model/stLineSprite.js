@@ -28,8 +28,7 @@ class StLineSprite extends Polyline {
       strokeColor: lineCfg.strokeColor,
       lineWidth: lineCfg.lineWidth,
       points: getDefalutPoints(attrs.stKey),
-      smooth: true,
-      lineJoin: 'bevel'
+      // lineJoin: 'bevel'
     }, attrs)
 
     super(attrs);
@@ -48,7 +47,6 @@ class StLineSprite extends Polyline {
             scale[1] * sp[1],
           ]
         }
-        this.active(true);
         evt.stopPropagation();
       });
   
@@ -63,6 +61,8 @@ class StLineSprite extends Polyline {
             if (typeof child.active === "function") {
               child.active(false)
             }
+          } else {
+            this.active(true);
           }
         }
         evt.stopPropagation();
@@ -100,7 +100,6 @@ class StLineSprite extends Polyline {
   }
 
   del() {
-    console.log('this.remove()');
     this.remove()
   }
 
@@ -109,9 +108,12 @@ class StLineSprite extends Polyline {
     // console.log(attr);
     if (attr.pos) {
       this.attributes.pos = attr.pos
-    }
-    if (attr.scale) {
+    } else if (attr.scale) {
       this.attributes.scale = attr.scale
+    } else if (attr.points) {
+      // this.attributes.points = attr.points
+      // console.log(this);
+      this.attributes.points = attr.points
     }
   }
 
