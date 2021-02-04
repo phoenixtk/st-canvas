@@ -26,7 +26,7 @@ class StSvgSprite extends Group {
     }, attrs)
     
     super(attrs);
-    this.$vue = _vue
+    this.$editor = _vue
     this.id = tool.getUuid();
     let dArr = getSvgPath(attrs.stKey);
     for (const item of dArr) {
@@ -96,12 +96,12 @@ class StSvgSprite extends Group {
       this.attributes.borderColor = 'blue'
       this.actived = true
       // 暂时只处理一个选中的时候
-      this.$vue.showProp(this)
+      this.$editor.showProp(this)
     } else {
       this.attributes.borderWidth = 0,
       this.attributes.borderColor = 'white'
       this.actived = false
-      this.$vue.unactivatedData(this)
+      this.$editor.unactivatedData(this)
     }
   }
 

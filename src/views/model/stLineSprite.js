@@ -104,15 +104,12 @@ class StLineSprite extends Polyline {
   }
 
   set attr(attr) {
-    // 暂时支持2个属性 pos scale
-    // console.log(attr);
+    // 暂时支持以下属性
     if (attr.pos) {
       this.attributes.pos = attr.pos
     } else if (attr.scale) {
       this.attributes.scale = attr.scale
     } else if (attr.points) {
-      // this.attributes.points = attr.points
-      // console.log(this);
       this.attributes.points = attr.points
     }
   }
