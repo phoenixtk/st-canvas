@@ -24,7 +24,7 @@ class StLineSprite extends Polyline {
       }
     }
     attrs = Object.assign({
-      normalize: true,
+      // normalize: true,
       strokeColor: lineCfg.strokeColor,
       lineWidth: lineCfg.lineWidth,
       points: getDefalutPoints(attrs.stKey),

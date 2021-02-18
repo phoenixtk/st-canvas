@@ -69,25 +69,35 @@
         <el-tab-pane label="属性" name="props">
           <el-row v-show="propsDis.pos">
             <el-col :span="5">位置：</el-col>
-            <el-col :span="4" style="text-align: right; padding-right: 10px"
+            <el-col :span="3" style="text-align: right; padding-right: 10px"
               >x</el-col
             >
-            <el-col :span="5">
+            <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.pos.x"
                 @change="(val) => propsFormChange(val, 'posx')"
               ></el-input>
             </el-col>
-            <el-col :span="4" style="text-align: right; padding-right: 10px"
+            <el-col :span="3" style="text-align: right; padding-right: 10px"
               >y</el-col
             >
-            <el-col :span="5">
+            <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.pos.y"
                 @change="(val) => propsFormChange(val, 'posy')"
               ></el-input>
+            </el-col>
+            <el-col :span="4">
+              <el-button
+                class="st-pos-handler"
+                :class="stPosHandlerEx('pos')"
+                size="mini"
+                icon="el-icon-edit"
+                @click="altMarkerCur('pos')"
+              >
+              </el-button>
             </el-col>
           </el-row>
           <el-row v-show="propsDis.scale">
@@ -102,71 +112,101 @@
           </el-row>
           <el-row v-show="propsDis.point1">
             <el-col :span="5">顶点1：</el-col>
-            <el-col :span="4" style="text-align: right; padding-right: 10px"
+            <el-col :span="3" style="text-align: right; padding-right: 10px"
               >x</el-col
             >
-            <el-col :span="5">
+            <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.points.p1x"
                 @change="(val) => propsFormChange(val, 'points1x')"
               ></el-input>
             </el-col>
-            <el-col :span="4" style="text-align: right; padding-right: 10px"
+            <el-col :span="3" style="text-align: right; padding-right: 10px"
               >y</el-col
             >
-            <el-col :span="5">
+            <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.points.p1y"
                 @change="(val) => propsFormChange(val, 'points1y')"
               ></el-input>
             </el-col>
+            <el-col :span="4">
+              <el-button
+                class="st-pos-handler"
+                :class="stPosHandlerEx('points1')"
+                size="mini"
+                icon="el-icon-edit"
+                @click="altMarkerCur('points1')"
+              >
+              </el-button>
+            </el-col>
           </el-row>
           <el-row v-show="propsDis.point2">
             <el-col :span="5">顶点2：</el-col>
-            <el-col :span="4" style="text-align: right; padding-right: 10px"
+            <el-col :span="3" style="text-align: right; padding-right: 10px"
               >x</el-col
             >
-            <el-col :span="5">
+            <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.points.p2x"
                 @change="(val) => propsFormChange(val, 'points2x')"
               ></el-input>
             </el-col>
-            <el-col :span="4" style="text-align: right; padding-right: 10px"
+            <el-col :span="3" style="text-align: right; padding-right: 10px"
               >y</el-col
             >
-            <el-col :span="5">
+            <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.points.p2y"
                 @change="(val) => propsFormChange(val, 'points2y')"
               ></el-input>
             </el-col>
+            <el-col :span="4">
+              <el-button
+                class="st-pos-handler"
+                :class="stPosHandlerEx('points2')"
+                size="mini"
+                icon="el-icon-edit"
+                @click="altMarkerCur('points2')"
+              >
+              </el-button>
+            </el-col>
           </el-row>
           <el-row v-show="propsDis.point3">
             <el-col :span="5">顶点3：</el-col>
-            <el-col :span="4" style="text-align: right; padding-right: 10px"
+            <el-col :span="3" style="text-align: right; padding-right: 10px"
               >x</el-col
             >
-            <el-col :span="5">
+            <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.points.p3x"
                 @change="(val) => propsFormChange(val, 'points3x')"
               ></el-input>
             </el-col>
-            <el-col :span="4" style="text-align: right; padding-right: 10px"
+            <el-col :span="3" style="text-align: right; padding-right: 10px"
               >y</el-col
             >
-            <el-col :span="5">
+            <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.points.p3y"
                 @change="(val) => propsFormChange(val, 'points3y')"
               ></el-input>
+            </el-col>
+            <el-col :span="4">
+              <el-button
+                class="st-pos-handler"
+                :class="stPosHandlerEx('points3')"
+                size="mini"
+                icon="el-icon-edit"
+                @click="altMarkerCur('points3')"
+              >
+              </el-button>
             </el-col>
           </el-row>
         </el-tab-pane>
@@ -207,13 +247,6 @@ export default {
       tabsActive: "comps",
       svgArr: [],
       lineArr: [],
-      propsDis: {
-        pos: false,
-        scale: false,
-        point1: false,
-        point2: false,
-        point3: false,
-      },
       scaleObj: {
         COMPONENTS_SVG_SCALE: 50 / 1024,
         VIEWBOX_SCALE_INIT: 64 / 1024,
@@ -230,7 +263,14 @@ export default {
           lineWidth: 2,
         },
       },
-      propsForm: {
+      propsDis: { // 属性tab中的控件显示隐藏
+        pos: false,
+        scale: false,
+        point1: false,
+        point2: false,
+        point3: false,
+      },
+      propsForm: { // 属性tab中的控件值
         pos: {
           x: 0,
           y: 0,
@@ -245,7 +285,18 @@ export default {
           p3y: 0,
         },
       },
-      activatedItems: [],
+      activatedItems: [], // 当前选中项
+      altMarker: {  // alt + 左键 相关控制
+        cur: 'pos',
+        axis: {
+          x: null,
+          y: null,
+        },
+      }
+      // altPos: {
+      //   x: null,
+      //   y: null,
+      // },
     };
   },
   computed: {
@@ -281,13 +332,38 @@ export default {
           }
         });
         this.layer.addEventListener("click", (evt) => {
-          this.tabsActive = "comps";
-          this.unactiveAll();
+          if (evt.originalEvent.altKey) {
+            this.altMarker.axis.x = evt.x;
+            this.altMarker.axis.y = evt.y;
+            /* this.$message({
+              dangerouslyUseHTMLString: true,
+              message:
+                '已获取当前坐标 x:' + this.altPos.x + ' y:' + this.altPos.y,
+              duration: 3000,
+              center: true,
+            }); */
+            this.altMarkerPosHandler()
+          } else {
+            this.tabsActive = "comps";
+            this.unactiveAll();
+          }
         });
+        /* this.layer.addEventListener("mouseup", (e) => {
+          console.log(e);
+          var keyCode = e.keyCode || e.which || e.charCode;
+          var ctrlKey = e.ctrlKey || e.metaKey;
+          if (ctrlKey) {
+            if (keyCode == 71) {  // ctrl + g
+              console.log('ctrl + g' + keyCode);
+              e.preventDefault();
+              return false;
+            }
+          }
+        }); */
       }
     },
     unactiveAll() {
-      console.log('unactiveAll');
+      // console.log("unactiveAll");
       // get sprites
       for (const child of this.layer.children) {
         // set sprites unactive
@@ -408,6 +484,7 @@ export default {
     },
     showProp(obj) {
       this.tabsActive = "props";
+      this.altMarker.cur = 'pos'
       if (obj.constructor.name === "StSvgSprite") {
         this.activatedItems.push(obj);
         this.propsForm.pos.x = obj.attr.pos[0];
@@ -453,45 +530,114 @@ export default {
     },
     propsFormChange(val, type) {
       function setPoint(item, attr, index, val) {
-        let points = []
-          for (let i = 0; i < item.attr.points.length; i++) {
-            const point = item.attr.points[i];
-            if (i === index) {
-              points.push(parseFloat(val));
-            } else {
-              points.push(point);
-            }
+        let points = [];
+        for (let i = 0; i < item.attr.points.length; i++) {
+          const point = item.attr.points[i];
+          if (i === index) {
+            points.push(parseFloat(val));
+          } else {
+            points.push(point);
           }
-          attr.points = points
+        }
+        attr.points = points;
       }
       if (this.activatedItems && this.activatedItems.length > 0) {
         for (const item of this.activatedItems) {
-          let attr = {}
+          let attr = {};
           if (type === "posx") {
-            attr.pos = item.attr.pos
+            attr.pos = item.attr.pos;
             attr.pos[0] = parseFloat(val);
           } else if (type === "posy") {
-            attr.pos = item.attr.pos
+            attr.pos = item.attr.pos;
             attr.pos[1] = parseFloat(val);
           } else if (type === "scale") {
             attr.scale = parseFloat(val);
           } else if (type === "points1x") {
-            setPoint(item, attr, 2, val)
+            setPoint(item, attr, 2, val);
           } else if (type === "points1y") {
-            setPoint(item, attr, 3, val)
+            setPoint(item, attr, 3, val);
           } else if (type === "points2x") {
-            setPoint(item, attr, 4, val)
+            setPoint(item, attr, 4, val);
           } else if (type === "points2y") {
-            setPoint(item, attr, 5, val)
+            setPoint(item, attr, 5, val);
           } else if (type === "points3x") {
-            setPoint(item, attr, 6, val)
+            setPoint(item, attr, 6, val);
           } else if (type === "points3y") {
-            setPoint(item, attr, 7, val)
+            setPoint(item, attr, 7, val);
           }
           item.attr = attr;
         }
       }
     },
+    stPosHandlerEx(type) {
+      return {
+        'st-pos-handler-cur': type === this.altMarker.cur,
+      };
+    },
+    altMarkerCur(type) {
+      this.altMarker.cur = type
+    },
+    altMarkerPosHandler() {
+      // 当前位置赋值当前选中
+      if (this.activatedItems.length === 0) {
+        this.$message({
+          dangerouslyUseHTMLString: true,
+          message:
+            '未选中元素',
+          duration: 3000,
+          center: true,
+        });
+        return false
+      }
+      if (this.tabsActive !== 'props') {
+        this.$message({
+          dangerouslyUseHTMLString: true,
+          message:
+            'tab未切换至属性',
+          duration: 3000,
+          center: true,
+        });
+        return false
+      }
+      let cur = this.altMarker.cur
+      for (const item of this.activatedItems) {
+        if (item.attr && item.attr.constructor.name === "Group") {
+          // 图
+          if (cur === 'pos') {
+            item.attr.x = this.altMarker.axis.x
+            item.attr.y = this.altMarker.axis.y
+          }
+        } else if (item.attr && item.attr.constructor.name === "Polyline") {
+          if (cur === 'pos') {
+            item.attr.x = this.altMarker.axis.x
+            item.attr.y = this.altMarker.axis.y
+          } else if (cur.indexOf('points') > -1) {
+            let curLast = parseInt(cur.substring(cur.length - 1, cur.length))
+            let oldPoints = item.attr.points
+            let newPoints = []
+            let attr = {}
+            // 线 
+            // 节点
+            for (let i = 0; i < oldPoints.length; i++) {
+              const op = oldPoints[i];
+              if (i === curLast * 2) {
+                newPoints.push(this.altMarker.axis.x - item.attr.x)
+              } else if (i === curLast * 2 + 1) {
+                newPoints.push(this.altMarker.axis.y - item.attr.y)
+              } else {
+                newPoints.push(op)
+              }
+            }
+            attr.points = newPoints
+            item.attr = attr
+          }
+          
+          
+        }
+        
+      }
+      
+    }
   },
   created() {
     // ============= svgs ==============
@@ -529,14 +675,32 @@ export default {
     this.editorInit();
     // this.addSvgSprite("cat1", [300, 300]);
 
+    window.onkeydown = (e) => {
+      var keyCode = e.keyCode || e.which || e.charCode;
+      var ctrlKey = e.ctrlKey || e.metaKey;
+      // console.log(keyCode);
+      if (ctrlKey) {
+        if (keyCode == 219) {
+          this.$message({
+            dangerouslyUseHTMLString: true,
+            message:
+              "<strong><i>使用说明</i></strong><br>" +
+              "Alt + 左键: 获取当前鼠标坐标",
+            duration: 0,
+            center: true,
+            showClose: true,
+          });
+          e.preventDefault();
+          return false;
+        }
+      }
+    };
+
     window.onkeyup = (e) => {
       if (e.which === 46) {
-        console.log(this.activatedItems);
         if (this.activatedItems && this.activatedItems.length > 0) {
           for (let i = 0; i < this.activatedItems.length; i++) {
             const item = this.activatedItems[i];
-            console.log('item.del()');
-            console.log(item);
             item.del();
           }
         }
@@ -547,6 +711,7 @@ export default {
   },
   updated() {},
   beforeDestroy() {
+    window.onkeydown = null;
     window.onkeyup = null;
   },
   activated() {},
@@ -607,6 +772,7 @@ export default {
   .st-tabs {
     height: 100%;
   }
+
 }
 </style>
 <style lang="scss">
@@ -625,6 +791,16 @@ export default {
     width: 90%;
     height: 40px;
     margin-left: 5%;
+  }
+  .el-input__inner {
+    padding: 0 2px;
+  }
+  .st-pos-handler,.el-button--mini{
+    padding: 7px 9px;
+    margin: 0 8px;
+  }
+  .st-pos-handler-cur {
+    background-color: aquamarine
   }
 }
 </style>
