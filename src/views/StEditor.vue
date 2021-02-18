@@ -604,11 +604,15 @@ export default {
         if (item.attr && item.attr.constructor.name === "Group") {
           // 图
           if (cur === 'pos') {
+            this.propsForm.pos.x = this.altMarker.axis.x
+            this.propsForm.pos.y = this.altMarker.axis.y
             item.attr.x = this.altMarker.axis.x
             item.attr.y = this.altMarker.axis.y
           }
         } else if (item.attr && item.attr.constructor.name === "Polyline") {
           if (cur === 'pos') {
+            this.propsForm.pos.x = this.altMarker.axis.x
+            this.propsForm.pos.y = this.altMarker.axis.y
             item.attr.x = this.altMarker.axis.x
             item.attr.y = this.altMarker.axis.y
           } else if (cur.indexOf('points') > -1) {
@@ -618,6 +622,17 @@ export default {
             let attr = {}
             // 线 
             // 节点
+            if (curLast === 1) {
+              this.propsForm.points.p1x = this.altMarker.axis.x - item.attr.x
+              this.propsForm.points.p1y = this.altMarker.axis.x - item.attr.y
+            } else if (curLast === 2) {
+              this.propsForm.points.p2x = this.altMarker.axis.x - item.attr.x
+              this.propsForm.points.p2y = this.altMarker.axis.x - item.attr.y
+            } else if (curLast === 3) {
+              this.propsForm.points.p3x = this.altMarker.axis.x - item.attr.x
+              this.propsForm.points.p3y = this.altMarker.axis.x - item.attr.y
+            }
+            
             for (let i = 0; i < oldPoints.length; i++) {
               const op = oldPoints[i];
               if (i === curLast * 2) {
