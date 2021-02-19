@@ -117,24 +117,22 @@ class StPipeSprite extends Group {
   }
 
   stanimate() {
+    let stPolyline = this.children[0];
+    let d = stPolyline.attributes.d
+    let stSvg = new StSvgSprite(
+      {
+        stKey: 'right-arrow',
+        pos: [0, 0],
+        mode: this.attributes.mode,
+        offsetPath: d,
+      },
+      this.$editor,
+    )
+    
     this.stInterval = setInterval(() => {
-      let stPolyline = this.children[0];
-      let d = stPolyline.attributes.d
-
-      let svg = new StSvgSprite(
-        {
-          stKey: 'ghost3',
-          pos: [20, 20],
-          mode: this.attributes.mode,
-          offsetPath: d,
-        },
-        this.$editor,
-      )
-
+      let svg = stSvg.cloneNode(true)
       this.append(svg);
-
       let duration = 4000
-
       svg.animate([
         { offsetDistance: 0 },
         { offsetDistance: 1 },
@@ -144,7 +142,6 @@ class StPipeSprite extends Group {
         // iterations: Infinity,
         // easing: 'step-end',
       });
-
       setTimeout(() => {
         svg.remove()
       }, duration)
