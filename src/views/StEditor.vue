@@ -210,7 +210,67 @@
             </el-col>
           </el-row>
         </el-tab-pane>
-        <el-tab-pane label="动画" name="animation"> 动画 </el-tab-pane>
+        <el-tab-pane label="动画" name="animation">
+          <el-row>
+            <el-col :span="24" style="text-align: right">
+              <el-button
+                type="default"
+                size="mini"
+                icon="el-icon-plus"
+                @click="addAnimation"
+                v-show="animationAdd.btnAddShow"
+              >
+              </el-button>
+              <el-button
+                type="default"
+                size="mini"
+                icon="el-icon-check"
+                @click="saveAnimation"
+                v-show="!animationAdd.btnAddShow"
+              >
+              </el-button>
+            </el-col>
+          </el-row>
+          <div class="animation-add-container" v-show="animationAdd.show">
+            <el-col>
+              <el-select v-model="animationAdd.type" size="mini" placeholder="类型"
+                @change="animationAddTypeChange"
+              >
+                <el-option
+                  v-for="item in animationAdd.typeOpts"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-col>
+            <el-col v-show="animationAdd.angleShow">
+              <el-select v-model="animationAdd.angle" size="mini" placeholder="角度"
+                @change="animationAddAngleChange"
+              >
+                <el-option
+                  v-for="item in animationAdd.angleOpts"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-col>
+            <el-col v-show="animationAdd.durationShow">
+              <el-select v-model="animationAdd.duration" size="mini" placeholder="时长"
+                @change="animationAddDurationChange"
+              >
+                <el-option
+                  v-for="item in animationAdd.durationOpts"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-col>
+            <div style="clear: both;"></div>
+          </div>
+        </el-tab-pane>
         <el-tab-pane label="业务" name="biz"> 定时任务补偿 </el-tab-pane>
       </el-tabs>
     </div>
@@ -230,6 +290,7 @@ const { Scene } = spritejs;
 import StSvgSprite from "./model/stSvgSprite";
 import StLineSprite from "./model/stLineSprite";
 // import tool from "./utils/tool";
+import svg from "./utils/svg";
 
 export default {
   name: "StEditor",
@@ -247,10 +308,7 @@ export default {
       tabsActive: "comps",
       svgArr: [],
       lineArr: [],
-      scaleObj: {
-        COMPONENTS_SVG_SCALE: 50 / 1024,
-        VIEWBOX_SCALE_INIT: 64 / 1024,
-      },
+      scaleObj: svg.getScale(),
       lineCfg: {
         LINE: {
           points: [200, 0],
@@ -292,11 +350,37 @@ export default {
           x: null,
           y: null,
         },
+      },
+      animationAdd: {
+        btnAddShow: true,
+        show: false,
+        angleShow: false,
+        durationShow: false,
+        type: '',
+        typeOpts: [{
+          value: 'rotate',
+          label: '旋转'
+        }, {
+          value: 'changeColor',
+          label: '变色'
+        }, {
+          value: 'offset',
+          label: '边缘平移'
+        }],
+        angle: '',
+        angleOpts: [{
+          value: '90',
+          label: '90°'
+        }, {
+          value: '180',
+          label: '180°'
+        }, {
+          value: '360',
+          label: '360°'
+        }],
+        duration: '',
+        durationOpts: [],
       }
-      // altPos: {
-      //   x: null,
-      //   y: null,
-      // },
     };
   },
   computed: {
@@ -321,7 +405,7 @@ export default {
           if (window.mousedownObj) {
             const mdo = window.mousedownObj;
             // console.log(mdo.target);
-            mdo.target.attr = {
+            mdo.target.stattr = {
               pos: [
                 evt.x - mdo.offsetPosition[0],
                 evt.y - mdo.offsetPosition[1],
@@ -443,6 +527,7 @@ export default {
 
       let targetX = null;
       let targetY = null;
+      let size = svg.getSize()
       if (act === "componentsSvgDrag") {
         let targetOffsetX =
           (fromOffsetX / this.scaleObj.COMPONENTS_SVG_SCALE) *
@@ -450,9 +535,8 @@ export default {
         let targetOffsetY =
           (fromOffsetY / this.scaleObj.COMPONENTS_SVG_SCALE) *
           this.scaleObj.VIEWBOX_SCALE_INIT;
-
-        targetX = ev.x - targetOffsetX;
-        targetY = ev.y - targetOffsetY;
+        targetX = ev.x + size[0] * this.scaleObj.VIEWBOX_SCALE_INIT / 2  - targetOffsetX;
+        targetY = ev.y + size[1] * this.scaleObj.VIEWBOX_SCALE_INIT / 2 - targetOffsetY;
         this.addSvgSprite(stKey, [targetX, targetY]);
       } else if (act === "componentsLineDrag") {
         this.addLineSprite(stKey, [ev.x, ev.y]);
@@ -487,28 +571,27 @@ export default {
       this.altMarker.cur = 'pos'
       if (obj.constructor.name === "StSvgSprite") {
         this.activatedItems.push(obj);
-        this.propsForm.pos.x = obj.attr.pos[0];
-        this.propsForm.pos.y = obj.attr.pos[1];
-        this.propsForm.scale = obj.attr.scale[0];
+        this.propsForm.pos.x = obj.stattr.pos[0];
+        this.propsForm.pos.y = obj.stattr.pos[1];
+        this.propsForm.scale = obj.stattr.scale[0];
         this.propsDisHandler("StSvgSprite");
       } else if (obj.constructor.name === "StLineSprite") {
         this.activatedItems.push(obj);
-        // console.log(obj.attr);
-        if (obj.attr.stKey === "polyline1broken") {
-          this.propsForm.pos.x = obj.attr.pos[0];
-          this.propsForm.pos.y = obj.attr.pos[1];
-          this.propsForm.points.p1x = obj.attr.points[2];
-          this.propsForm.points.p1y = obj.attr.points[3];
+        if (obj.stattr.stKey === "polyline1broken") {
+          this.propsForm.pos.x = obj.stattr.pos[0];
+          this.propsForm.pos.y = obj.stattr.pos[1];
+          this.propsForm.points.p1x = obj.stattr.points[2];
+          this.propsForm.points.p1y = obj.stattr.points[3];
           this.propsDisHandler("StLineSprite1b");
-        } else if (obj.attr.stKey === "polyline3broken") {
-          this.propsForm.pos.x = obj.attr.pos[0];
-          this.propsForm.pos.y = obj.attr.pos[1];
-          this.propsForm.points.p1x = obj.attr.points[2];
-          this.propsForm.points.p1y = obj.attr.points[3];
-          this.propsForm.points.p2x = obj.attr.points[4];
-          this.propsForm.points.p2y = obj.attr.points[5];
-          this.propsForm.points.p3x = obj.attr.points[6];
-          this.propsForm.points.p3y = obj.attr.points[7];
+        } else if (obj.stattr.stKey === "polyline3broken") {
+          this.propsForm.pos.x = obj.stattr.pos[0];
+          this.propsForm.pos.y = obj.stattr.pos[1];
+          this.propsForm.points.p1x = obj.stattr.points[2];
+          this.propsForm.points.p1y = obj.stattr.points[3];
+          this.propsForm.points.p2x = obj.stattr.points[4];
+          this.propsForm.points.p2y = obj.stattr.points[5];
+          this.propsForm.points.p3x = obj.stattr.points[6];
+          this.propsForm.points.p3y = obj.stattr.points[7];
           this.propsDisHandler("StLineSprite3b");
         }
       }
@@ -531,8 +614,8 @@ export default {
     propsFormChange(val, type) {
       function setPoint(item, attr, index, val) {
         let points = [];
-        for (let i = 0; i < item.attr.points.length; i++) {
-          const point = item.attr.points[i];
+        for (let i = 0; i < item.stattr.points.length; i++) {
+          const point = item.stattr.points[i];
           if (i === index) {
             points.push(parseFloat(val));
           } else {
@@ -545,10 +628,10 @@ export default {
         for (const item of this.activatedItems) {
           let attr = {};
           if (type === "posx") {
-            attr.pos = item.attr.pos;
+            attr.pos = item.stattr.pos;
             attr.pos[0] = parseFloat(val);
           } else if (type === "posy") {
-            attr.pos = item.attr.pos;
+            attr.pos = item.stattr.pos;
             attr.pos[1] = parseFloat(val);
           } else if (type === "scale") {
             attr.scale = parseFloat(val);
@@ -565,7 +648,7 @@ export default {
           } else if (type === "points3y") {
             setPoint(item, attr, 7, val);
           }
-          item.attr = attr;
+          item.stattr = attr;
         }
       }
     },
@@ -577,8 +660,7 @@ export default {
     altMarkerCur(type) {
       this.altMarker.cur = type
     },
-    altMarkerPosHandler() {
-      // 当前位置赋值当前选中
+    checkActivated() {
       if (this.activatedItems.length === 0) {
         this.$message({
           dangerouslyUseHTMLString: true,
@@ -587,6 +669,12 @@ export default {
           duration: 3000,
           center: true,
         });
+        return false
+      }
+      return true
+    },
+    altMarkerPosHandler() {
+      if (!this.checkActivated()) {
         return false
       }
       if (this.tabsActive !== 'props') {
@@ -601,50 +689,50 @@ export default {
       }
       let cur = this.altMarker.cur
       for (const item of this.activatedItems) {
-        if (item.attr && item.attr.constructor.name === "Group") {
+        if (item.stattr && item.stattr.constructor.name === "Group") {
           // 图
           if (cur === 'pos') {
             this.propsForm.pos.x = this.altMarker.axis.x
             this.propsForm.pos.y = this.altMarker.axis.y
-            item.attr.x = this.altMarker.axis.x
-            item.attr.y = this.altMarker.axis.y
+            item.stattr.x = this.altMarker.axis.x
+            item.stattr.y = this.altMarker.axis.y
           }
-        } else if (item.attr && item.attr.constructor.name === "Polyline") {
+        } else if (item.stattr && item.stattr.constructor.name === "Polyline") {
           if (cur === 'pos') {
             this.propsForm.pos.x = this.altMarker.axis.x
             this.propsForm.pos.y = this.altMarker.axis.y
-            item.attr.x = this.altMarker.axis.x
-            item.attr.y = this.altMarker.axis.y
+            item.stattr.x = this.altMarker.axis.x
+            item.stattr.y = this.altMarker.axis.y
           } else if (cur.indexOf('points') > -1) {
             let curLast = parseInt(cur.substring(cur.length - 1, cur.length))
-            let oldPoints = item.attr.points
+            let oldPoints = item.stattr.points
             let newPoints = []
             let attr = {}
             // 线 
             // 节点
             if (curLast === 1) {
-              this.propsForm.points.p1x = this.altMarker.axis.x - item.attr.x
-              this.propsForm.points.p1y = this.altMarker.axis.x - item.attr.y
+              this.propsForm.points.p1x = this.altMarker.axis.x - item.stattr.x
+              this.propsForm.points.p1y = this.altMarker.axis.x - item.stattr.y
             } else if (curLast === 2) {
-              this.propsForm.points.p2x = this.altMarker.axis.x - item.attr.x
-              this.propsForm.points.p2y = this.altMarker.axis.x - item.attr.y
+              this.propsForm.points.p2x = this.altMarker.axis.x - item.stattr.x
+              this.propsForm.points.p2y = this.altMarker.axis.x - item.stattr.y
             } else if (curLast === 3) {
-              this.propsForm.points.p3x = this.altMarker.axis.x - item.attr.x
-              this.propsForm.points.p3y = this.altMarker.axis.x - item.attr.y
+              this.propsForm.points.p3x = this.altMarker.axis.x - item.stattr.x
+              this.propsForm.points.p3y = this.altMarker.axis.x - item.stattr.y
             }
             
             for (let i = 0; i < oldPoints.length; i++) {
               const op = oldPoints[i];
               if (i === curLast * 2) {
-                newPoints.push(this.altMarker.axis.x - item.attr.x)
+                newPoints.push(this.altMarker.axis.x - item.stattr.x)
               } else if (i === curLast * 2 + 1) {
-                newPoints.push(this.altMarker.axis.y - item.attr.y)
+                newPoints.push(this.altMarker.axis.y - item.stattr.y)
               } else {
                 newPoints.push(op)
               }
             }
             attr.points = newPoints
-            item.attr = attr
+            item.stattr = attr
           }
           
           
@@ -652,6 +740,37 @@ export default {
         
       }
       
+    },
+    addAnimation() {
+      if (!this.checkActivated()) {
+        return false
+      }
+      this.animationAdd.show = true
+      this.animationAdd.angleShow = false
+      this.animationAdd.durationShow = false
+      this.animationAdd.type = ''
+    },
+    saveAnimation() {
+      for (const activated of this.activatedItems) {
+        if (this.animationAdd.type === 'rotate') {
+          activated.rotate(this.animationAdd.angle, this.animationAdd.duration)
+        }
+      }
+    },
+    animationAddTypeChange(val) {
+      if (val === 'rotate') {
+        this.animationAdd.angleShow = true
+      }
+    },
+    animationAddAngleChange(val) {
+      if (val !== '') {
+        this.animationAdd.durationShow = true
+      }
+    },
+    animationAddDurationChange(val) {
+      if (val !== '') {
+        this.animationAdd.btnAddShow = false
+      }
     }
   },
   created() {
@@ -684,6 +803,15 @@ export default {
         key: lineKey,
         src: require("@/assets/lines/" + lineKey + ".svg"),
       });
+    }
+
+    this.animationAdd.durationOpts = []
+    for (let i = 0; i < 50; i++) {
+      let d = 500
+      this.animationAdd.durationOpts.push({
+        value: 500 + i * 100,
+        label: 500 + i * 100 + 'ms'
+      })
     }
   },
   mounted() {
@@ -773,7 +901,7 @@ export default {
     height: 100%;
     background-color: white;
     box-shadow: 1px 0px 8px #888888;
-    z-index: 9000;
+    z-index: 1000;
     overflow: hidden;
     &-icon {
       width: 93%;
@@ -788,6 +916,17 @@ export default {
     height: 100%;
   }
 
+  .animation-add-container {
+    display: block;
+    box-sizing: border-box;
+    width: 90%;
+    margin-left: 5%;
+    border: 1px solid teal;
+    // background-color: #c4e1ff;
+    border-radius: 5px;
+    padding: 15px;
+  }
+  
 }
 </style>
 <style lang="scss">
@@ -816,6 +955,9 @@ export default {
   }
   .st-pos-handler-cur {
     background-color: aquamarine
+  }
+  .el-select-dropdown .el-popper{
+    z-index: 10000;
   }
 }
 </style>

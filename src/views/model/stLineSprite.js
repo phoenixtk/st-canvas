@@ -103,7 +103,7 @@ class StLineSprite extends Polyline {
     this.remove()
   }
 
-  set attr(attr) {
+  set stattr(attr) {
     // 暂时支持以下属性
     if (attr.pos) {
       this.attributes.pos = attr.pos
@@ -114,7 +114,7 @@ class StLineSprite extends Polyline {
     }
   }
 
-  get attr() {
+  get stattr() {
     return this.attributes;
   }
 }

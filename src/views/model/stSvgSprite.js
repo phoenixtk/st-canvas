@@ -2,21 +2,19 @@ import { Group, Path } from "spritejs";
 import getSvgPath from "../utils/svgMock";
 // import ctrlBlock from "../utils/ctrlBlock";
 import tool from "../utils/tool";
+import svg from "../utils/svg";
 
 // const setDefault = Symbol.for('spritejs_setAttribute');
 
-const scaleObj = {
-  COMPONENTS_SVG_SCALE: 50 / 1024,
-  VIEWBOX_SCALE_INIT: 64 / 1024,
-};
+const scaleObj = svg.getScale()
 
 
 class StSvgSprite extends Group {
   constructor(attrs = {}, _vue) {
     attrs = Object.assign({
       normalize: true,
-      size: [1222, 1024],
-      anchor: [0, 0],
+      size: svg.getSize(),
+      anchor: [0.5, 0.5],
       // bgcolor: '#cec', // just for test
       borderRadius: 0,
       scale: [
@@ -32,9 +30,10 @@ class StSvgSprite extends Group {
     for (const item of dArr) {
       const path = new Path();
       path.attr({
+        pos: [- 611, - 512],
         d: item.d,
         // scale: 3,
-        // anchor: [0, 0.5],
+        anchor: [0.5, 0.5],
         // strokeColor: 'red',
         fillColor: item.fill,
         // rotate: i * 60,
@@ -110,7 +109,7 @@ class StSvgSprite extends Group {
     this.remove()
   }
 
-  set attr(attr) {
+  set stattr(attr) {
     // 暂时暴露2个属性 pos scale
     // console.log(attr);
     if (attr.pos) {
@@ -121,8 +120,19 @@ class StSvgSprite extends Group {
     }
   }
 
-  get attr() {
+  get stattr() {
     return this.attributes;
+  }
+
+  rotate(angle, duration) {
+    this.animate([
+      {rotate: parseInt(angle)},
+    ], {
+      duration: parseInt(duration),
+      iterations: Infinity,
+      // easing: 'step-end',
+      // fill: 'both',
+    });
   }
 }
 
