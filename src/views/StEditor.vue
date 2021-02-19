@@ -48,13 +48,12 @@
               </div>
             </el-collapse-item>
             <el-collapse-item title="高级矢量图" name="3">
-              <div>简化流程：设计简洁直观的操作流程；</div>
-              <div>
-                清晰明确：语言表达清晰且表意明确，让用户快速理解进而作出决策；
-              </div>
-              <div>
-                帮助用户识别：界面简单直白，让用户快速识别而非回忆，减少用户记忆负担。
-              </div>
+              <img
+                src="/img/pipe.png"
+                st-key="pipe"
+                :draggable="true"
+                @dragstart="componentsDrag($event, 'ad-vector')"
+              />
             </el-collapse-item>
             <el-collapse-item title="其他" name="4">
               <div>
@@ -232,7 +231,7 @@
             </el-col>
           </el-row>
           <div class="animation-add-container" v-show="animationAdd.show">
-            <el-col>
+            <el-col :span="8">
               <el-select v-model="animationAdd.type" size="mini" placeholder="类型"
                 @change="animationAddTypeChange"
               >
@@ -244,7 +243,7 @@
                 </el-option>
               </el-select>
             </el-col>
-            <el-col v-show="animationAdd.angleShow">
+            <el-col :span="8" v-show="animationAdd.angleShow">
               <el-select v-model="animationAdd.angle" size="mini" placeholder="角度"
                 @change="animationAddAngleChange"
               >
@@ -256,7 +255,7 @@
                 </el-option>
               </el-select>
             </el-col>
-            <el-col v-show="animationAdd.durationShow">
+            <el-col :span="8" v-show="animationAdd.durationShow">
               <el-select v-model="animationAdd.duration" size="mini" placeholder="时长"
                 @change="animationAddDurationChange"
               >
@@ -289,6 +288,7 @@ import * as spritejs from "spritejs";
 const { Scene } = spritejs;
 import StSvgSprite from "./model/stSvgSprite";
 import StLineSprite from "./model/stLineSprite";
+import StPipeSprite from "./model/stPipeSprite";
 // import tool from "./utils/tool";
 import svg from "./utils/svg";
 
@@ -482,6 +482,19 @@ export default {
       this.unactiveAll();
       stLineSprite.active(true);
     },
+    addPipeSprite(pos) {
+      const stPipeSprite = new StPipeSprite(
+        {
+          pos: pos,
+          mode: this.mode,
+        },
+        this
+      );
+      this.layer.append(stPipeSprite);
+      this.unactiveAll();
+      stPipeSprite.active(true);
+      stPipeSprite.stanimate();
+    },
     tabsActiveClick(tab, event) {
       // console.log(tab, event);
     },
@@ -514,6 +527,8 @@ export default {
         ev.dataTransfer.setData("fromOffsetY", ev.offsetY);
       } else if (type === "line") {
         ev.dataTransfer.setData("act", "componentsLineDrag");
+      } else if (type === "ad-vector") {
+        ev.dataTransfer.setData("act", "componentsAdVectorDrag");
       }
     },
     drop(ev) {
@@ -540,6 +555,10 @@ export default {
         this.addSvgSprite(stKey, [targetX, targetY]);
       } else if (act === "componentsLineDrag") {
         this.addLineSprite(stKey, [ev.x, ev.y]);
+      } else if (act === "componentsAdVectorDrag") {
+        if (stKey === 'pipe') {
+          this.addPipeSprite([ev.x, ev.y]);
+        }
       }
     },
     allowDrop(ev) {
@@ -945,9 +964,17 @@ export default {
     width: 90%;
     height: 40px;
     margin-left: 5%;
+    .el-col {
+      line-height: 32px;
+    }
   }
   .el-input__inner {
     padding: 0 2px;
+  }
+  .el-select {
+    .el-input__inner {
+      width: 58px;
+    }
   }
   .st-pos-handler,.el-button--mini{
     padding: 7px 9px;
@@ -959,5 +986,6 @@ export default {
   .el-select-dropdown .el-popper{
     z-index: 10000;
   }
+  
 }
 </style>
