@@ -288,7 +288,7 @@ import * as spritejs from "spritejs";
 const { Scene } = spritejs;
 import StSvgSprite from "./model/stSvgSprite";
 import StLineSprite from "./model/stLineSprite";
-import StPipeSprite from "./model/stPipeSprite";
+import StPipe from "./model/stPipe";
 // import tool from "./utils/tool";
 import svg from "./utils/svg";
 
@@ -482,18 +482,18 @@ export default {
       this.unactiveAll();
       stLineSprite.active(true);
     },
-    addPipeSprite(pos) {
-      const stPipeSprite = new StPipeSprite(
+    addPipe(pos) {
+      const stPipe = new StPipe(
         {
           pos: pos,
           mode: this.mode,
         },
         this
       );
-      this.layer.append(stPipeSprite);
+      this.layer.append(stPipe);
       this.unactiveAll();
-      stPipeSprite.active(true);
-      stPipeSprite.stanimate();
+      stPipe.active(true);
+      stPipe.stanimate();
     },
     tabsActiveClick(tab, event) {
       // console.log(tab, event);
@@ -557,7 +557,7 @@ export default {
         this.addLineSprite(stKey, [ev.x, ev.y]);
       } else if (act === "componentsAdVectorDrag") {
         if (stKey === 'pipe') {
-          this.addPipeSprite([ev.x, ev.y]);
+          this.addPipe([ev.x, ev.y]);
         }
       }
     },
