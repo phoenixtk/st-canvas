@@ -1,3 +1,5 @@
+import config from "./config";
+
 let truck = {}
 truck.getUuid = function () {
   var len = 32;//32长度
@@ -21,5 +23,15 @@ truck.deepClone = (source, hash = new WeakMap()) => {
     }
   }
   return target;
+}
+/* 颜色取反算法 */
+truck.colorReverse = function (oldColorValue) {
+  if (config.isColorReverse) {
+    var oldColorValue = "0x" + oldColorValue.replace(/#/g, "");
+    var str = "000000" + (0xFFFFFF - oldColorValue).toString(16);
+    return "#" + str.substring(str.length - 6, str.length);
+  } else {
+    return oldColorValue;
+  }
 }
 export default truck

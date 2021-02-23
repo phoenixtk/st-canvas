@@ -10,7 +10,7 @@ const lineCfg = {
   l3broken: {
     points: [100, 0, 100, 100, 200, 100],
   },
-  strokeColor: "black",
+  strokeColor: tool.colorReverse("#000000"),
   lineWidth: 2,
 }
 
@@ -86,13 +86,13 @@ class StLineSprite extends Polyline {
 
   active(b) {
     if (b) {
-      this.attributes.strokeColor = "blue",
+      this.attributes.strokeColor = tool.colorReverse("#9400D3"),
       this.attributes.lineWidth = 4
       this.actived = true
       // 暂时只处理一个选中的时候
       this.$editor.showProp(this)
     } else {
-      this.attributes.strokeColor = "black",
+      this.attributes.strokeColor = tool.colorReverse("#000000"),
       this.attributes.lineWidth = 2
       this.actived = false
       this.$editor.unactivatedData(this)

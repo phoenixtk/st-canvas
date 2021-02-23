@@ -8,6 +8,17 @@
       size="small"
       @click="showLeftDrawer"
     ></el-button>
+    <el-input-number
+      class="st-editor-btn-totalscale"
+      size="small"
+      v-model="totalScale"
+      v-show="btnComponentsShow"
+      :precision="2"
+      :step="0.1"
+      :min="0.5"
+      :max="1.5"
+    >
+    </el-input-number>
     <div class="st-drawer-ltr" v-if="leftDrawerVisible">
       <div class="st-drawer-ltr-icon">
         <i class="el-icon-close" @click="leftDrawerClose"></i>
@@ -68,24 +79,24 @@
         <el-tab-pane label="属性" name="props">
           <el-row v-show="propsDis.pos">
             <el-col :span="5">位置：</el-col>
-            <el-col :span="3" style="text-align: right; padding-right: 10px"
-              >x</el-col
-            >
+            <el-col :span="3" style="text-align: right; padding-right: 10px">
+              x
+            </el-col>
             <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.pos.x"
-                @change="(val) => propsFormChange(val, 'posx')"
+                @change="(val) => propsChange(val, 'posx')"
               ></el-input>
             </el-col>
-            <el-col :span="3" style="text-align: right; padding-right: 10px"
-              >y</el-col
-            >
+            <el-col :span="3" style="text-align: right; padding-right: 10px">
+              y
+            </el-col>
             <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.pos.y"
-                @change="(val) => propsFormChange(val, 'posy')"
+                @change="(val) => propsChange(val, 'posy')"
               ></el-input>
             </el-col>
             <el-col :span="4">
@@ -105,30 +116,30 @@
               <el-input
                 size="mini"
                 v-model="propsForm.scale"
-                @change="(val) => propsFormChange(val, 'scale')"
+                @change="(val) => propsChange(val, 'scale')"
               ></el-input>
             </el-col>
           </el-row>
           <el-row v-show="propsDis.point1">
             <el-col :span="5">顶点1：</el-col>
-            <el-col :span="3" style="text-align: right; padding-right: 10px"
-              >x</el-col
-            >
+            <el-col :span="3" style="text-align: right; padding-right: 10px">
+              x
+            </el-col>
             <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.points.p1x"
-                @change="(val) => propsFormChange(val, 'points1x')"
+                @change="(val) => propsChange(val, 'points1x')"
               ></el-input>
             </el-col>
-            <el-col :span="3" style="text-align: right; padding-right: 10px"
-              >y</el-col
-            >
+            <el-col :span="3" style="text-align: right; padding-right: 10px">
+              y
+            </el-col>
             <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.points.p1y"
-                @change="(val) => propsFormChange(val, 'points1y')"
+                @change="(val) => propsChange(val, 'points1y')"
               ></el-input>
             </el-col>
             <el-col :span="4">
@@ -144,24 +155,24 @@
           </el-row>
           <el-row v-show="propsDis.point2">
             <el-col :span="5">顶点2：</el-col>
-            <el-col :span="3" style="text-align: right; padding-right: 10px"
-              >x</el-col
-            >
+            <el-col :span="3" style="text-align: right; padding-right: 10px">
+              x
+            </el-col>
             <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.points.p2x"
-                @change="(val) => propsFormChange(val, 'points2x')"
+                @change="(val) => propsChange(val, 'points2x')"
               ></el-input>
             </el-col>
-            <el-col :span="3" style="text-align: right; padding-right: 10px"
-              >y</el-col
-            >
+            <el-col :span="3" style="text-align: right; padding-right: 10px">
+              y
+            </el-col>
             <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.points.p2y"
-                @change="(val) => propsFormChange(val, 'points2y')"
+                @change="(val) => propsChange(val, 'points2y')"
               ></el-input>
             </el-col>
             <el-col :span="4">
@@ -177,24 +188,24 @@
           </el-row>
           <el-row v-show="propsDis.point3">
             <el-col :span="5">顶点3：</el-col>
-            <el-col :span="3" style="text-align: right; padding-right: 10px"
-              >x</el-col
-            >
+            <el-col :span="3" style="text-align: right; padding-right: 10px">
+              x
+            </el-col>
             <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.points.p3x"
-                @change="(val) => propsFormChange(val, 'points3x')"
+                @change="(val) => propsChange(val, 'points3x')"
               ></el-input>
             </el-col>
-            <el-col :span="3" style="text-align: right; padding-right: 10px"
-              >y</el-col
-            >
+            <el-col :span="3" style="text-align: right; padding-right: 10px">
+              y
+            </el-col>
             <el-col :span="4">
               <el-input
                 size="mini"
                 v-model="propsForm.points.p3y"
-                @change="(val) => propsFormChange(val, 'points3y')"
+                @change="(val) => propsChange(val, 'points3y')"
               ></el-input>
             </el-col>
             <el-col :span="4">
@@ -204,6 +215,45 @@
                 size="mini"
                 icon="el-icon-edit"
                 @click="altMarkerCur('points3')"
+              >
+              </el-button>
+            </el-col>
+          </el-row>
+          <el-row v-show="propsDis.pipe.point1">
+            <el-col :span="5">顶点1：</el-col>
+            <el-col :span="7">
+              <el-select
+                v-model="propsForm.pipe.point1.direction"
+                size="mini"
+                placeholder="方向"
+                @change="(val) => propsChange(val, 'pipePoint1Direction')"
+              >
+                <el-option
+                  v-for="item in pipeOpt.directionOpts"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-col>
+            <el-col :span="3" style="text-align: right; padding-right: 10px">
+              长
+            </el-col>
+            <el-col :span="4">
+              <el-input
+                size="mini"
+                v-model="propsForm.pipe.point1.length"
+                @change="(val) => propsChange(val, 'points1y')"
+              ></el-input>
+            </el-col>
+            <el-col :span="4">
+              <el-button
+                class="st-pos-handler"
+                :class="stPosHandlerEx('points1')"
+                size="mini"
+                icon="el-icon-edit"
+                @click="altMarkerCur('points1')"
               >
               </el-button>
             </el-col>
@@ -232,42 +282,54 @@
           </el-row>
           <div class="animation-add-container" v-show="animationAdd.show">
             <el-col :span="8">
-              <el-select v-model="animationAdd.type" size="mini" placeholder="类型"
+              <el-select
+                v-model="animationAdd.type"
+                size="mini"
+                placeholder="类型"
                 @change="animationAddTypeChange"
               >
                 <el-option
                   v-for="item in animationAdd.typeOpts"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.value">
+                  :value="item.value"
+                >
                 </el-option>
               </el-select>
             </el-col>
             <el-col :span="8" v-show="animationAdd.angleShow">
-              <el-select v-model="animationAdd.angle" size="mini" placeholder="角度"
+              <el-select
+                v-model="animationAdd.angle"
+                size="mini"
+                placeholder="角度"
                 @change="animationAddAngleChange"
               >
                 <el-option
                   v-for="item in animationAdd.angleOpts"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.value">
+                  :value="item.value"
+                >
                 </el-option>
               </el-select>
             </el-col>
             <el-col :span="8" v-show="animationAdd.durationShow">
-              <el-select v-model="animationAdd.duration" size="mini" placeholder="时长"
+              <el-select
+                v-model="animationAdd.duration"
+                size="mini"
+                placeholder="时长"
                 @change="animationAddDurationChange"
               >
                 <el-option
                   v-for="item in animationAdd.durationOpts"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.value">
+                  :value="item.value"
+                >
                 </el-option>
               </el-select>
             </el-col>
-            <div style="clear: both;"></div>
+            <div style="clear: both"></div>
           </div>
         </el-tab-pane>
         <el-tab-pane label="业务" name="biz"> 定时任务补偿 </el-tab-pane>
@@ -297,7 +359,10 @@ export default {
   components: {},
   data() {
     return {
+      scene: null,
+      bglayer: null,
       layer: null,
+      totalScale: 1,
       leftDrawerVisible: true,
       // btnComponentsShow: false,
       mode: "edit",
@@ -321,14 +386,21 @@ export default {
           lineWidth: 2,
         },
       },
-      propsDis: { // 属性tab中的控件显示隐藏
+      propsDis: {
+        // 属性tab中的控件显示隐藏
         pos: false,
         scale: false,
         point1: false,
         point2: false,
         point3: false,
+        pipe: {
+          point1: false,
+          point2: false,
+          point3: false,
+        },
       },
-      propsForm: { // 属性tab中的控件值
+      propsForm: {
+        // 属性tab中的控件值
         pos: {
           x: 0,
           y: 0,
@@ -342,10 +414,25 @@ export default {
           p3x: 0,
           p3y: 0,
         },
+        pipe: {
+          point1: {
+            direction: 'right',
+            length: 500,
+          },
+          point2: {
+            direction: null,
+            length: null,
+          },
+          point3: {
+            direction: null,
+            length: null,
+          },
+        },
       },
       activatedItems: [], // 当前选中项
-      altMarker: {  // alt + 左键 相关控制
-        cur: 'pos',
+      altMarker: {
+        // alt + 左键 相关控制
+        cur: "pos",
         axis: {
           x: null,
           y: null,
@@ -356,30 +443,58 @@ export default {
         show: false,
         angleShow: false,
         durationShow: false,
-        type: '',
-        typeOpts: [{
-          value: 'rotate',
-          label: '旋转'
-        }, {
-          value: 'changeColor',
-          label: '变色'
-        }, {
-          value: 'offset',
-          label: '边缘平移'
-        }],
-        angle: '',
-        angleOpts: [{
-          value: '90',
-          label: '90°'
-        }, {
-          value: '180',
-          label: '180°'
-        }, {
-          value: '360',
-          label: '360°'
-        }],
-        duration: '',
+        type: "",
+        typeOpts: [
+          {
+            value: "rotate",
+            label: "旋转",
+          },
+          {
+            value: "changeColor",
+            label: "变色",
+          },
+          {
+            value: "offset",
+            label: "边缘平移",
+          },
+        ],
+        angle: "",
+        angleOpts: [
+          {
+            value: "90",
+            label: "90°",
+          },
+          {
+            value: "180",
+            label: "180°",
+          },
+          {
+            value: "360",
+            label: "360°",
+          },
+        ],
+        duration: "",
         durationOpts: [],
+      },
+      pipeOpt: {
+        directionOpts: [
+          {
+            value: "up",
+            label: "上",
+          },
+          {
+            value: "right",
+            label: "右",
+          },
+          {
+            value: "down",
+            label: "下",
+          },
+          {
+            value: "left",
+            label: "左",
+          },
+        ]
       }
     };
   },
@@ -388,18 +503,45 @@ export default {
       return !this.leftDrawerVisible;
     },
   },
-  watch: {},
+  watch: {
+    totalScale: {
+      handler(scale) {
+        // console.log(scale);
+        // console.log(this.scene);
+        let width = 1440;
+        let height = 810;
+        this.scene.width = width * scale;
+        this.scene.height = height * scale;
+        this.scene.resize();
+      },
+    },
+  },
   methods: {
     editorInit() {
       const container = this.$refs[this.stEditorCanvasRef];
-      const scene = new Scene({
+      this.scene = new Scene({
         container,
         width: 1440,
-        height: 750,
+        height: 810,
+        // bgcolor: '#1e1e1e',
         mode: "stickyTop",
       });
 
-      this.layer = scene.layer();
+      const bglayer = this.scene.layer("bg", {
+        // bgcolor: '#1e1e1e',
+        handleEvent: false,
+      });
+      // console.log(bglayer);
+      bglayer.attributes.bgcolor = "#1e1e1e";
+      bglayer.attributes.zIndex = 10;
+
+      const fglayer = this.scene.layer("fg", {
+        handleEvent: true,
+      });
+      fglayer.attributes.zIndex = 50;
+
+      this.bglayer = bglayer;
+      this.layer = fglayer;
       if (this.mode === "edit") {
         this.layer.addEventListener("mouseup", (evt) => {
           if (window.mousedownObj) {
@@ -426,7 +568,7 @@ export default {
               duration: 3000,
               center: true,
             }); */
-            this.altMarkerPosHandler()
+            this.altMarkerPosHandler();
           } else {
             this.tabsActive = "comps";
             this.unactiveAll();
@@ -445,6 +587,16 @@ export default {
           }
         }); */
       }
+
+      /* window.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          this.layer.timeline.playbackRate = 0;
+          this.pauseAllAnimation()
+        } else {
+          this.layer.timeline.playbackRate = 1;
+          this.playAllAnimation()
+        }
+      }); */
     },
     unactiveAll() {
       // console.log("unactiveAll");
@@ -542,7 +694,7 @@ export default {
 
       let targetX = null;
       let targetY = null;
-      let size = svg.getSize()
+      let size = svg.getSize();
       if (act === "componentsSvgDrag") {
         let targetOffsetX =
           (fromOffsetX / this.scaleObj.COMPONENTS_SVG_SCALE) *
@@ -550,13 +702,19 @@ export default {
         let targetOffsetY =
           (fromOffsetY / this.scaleObj.COMPONENTS_SVG_SCALE) *
           this.scaleObj.VIEWBOX_SCALE_INIT;
-        targetX = ev.x + size[0] * this.scaleObj.VIEWBOX_SCALE_INIT / 2  - targetOffsetX;
-        targetY = ev.y + size[1] * this.scaleObj.VIEWBOX_SCALE_INIT / 2 - targetOffsetY;
+        targetX =
+          ev.x +
+          (size[0] * this.scaleObj.VIEWBOX_SCALE_INIT) / 2 -
+          targetOffsetX;
+        targetY =
+          ev.y +
+          (size[1] * this.scaleObj.VIEWBOX_SCALE_INIT) / 2 -
+          targetOffsetY;
         this.addSvgSprite(stKey, [targetX, targetY]);
       } else if (act === "componentsLineDrag") {
         this.addLineSprite(stKey, [ev.x, ev.y]);
       } else if (act === "componentsAdVectorDrag") {
-        if (stKey === 'pipe') {
+        if (stKey === "pipe") {
           this.addPipe([ev.x, ev.y]);
         }
       }
@@ -571,23 +729,41 @@ export default {
         this.propsDis.point1 = false;
         this.propsDis.point2 = false;
         this.propsDis.point3 = false;
+        this.propsDis.pipe.point1 = false;
+        this.propsDis.pipe.point2 = false;
+        this.propsDis.pipe.point3 = false;
       } else if (type === "StLineSprite1b") {
         this.propsDis.pos = true;
         this.propsDis.scale = false;
         this.propsDis.point1 = true;
         this.propsDis.point2 = false;
         this.propsDis.point3 = false;
+        this.propsDis.pipe.point1 = false;
+        this.propsDis.pipe.point2 = false;
+        this.propsDis.pipe.point3 = false;
       } else if (type === "StLineSprite3b") {
         this.propsDis.pos = true;
         this.propsDis.scale = false;
         this.propsDis.point1 = true;
         this.propsDis.point2 = true;
         this.propsDis.point3 = true;
+        this.propsDis.pipe.point1 = false;
+        this.propsDis.pipe.point2 = false;
+        this.propsDis.pipe.point3 = false;
+      } else if (type === "StPipe") {
+        this.propsDis.pos = true;
+        this.propsDis.scale = false;
+        this.propsDis.point1 = false;
+        this.propsDis.point2 = false;
+        this.propsDis.point3 = false;
+        this.propsDis.pipe.point1 = true;
+        this.propsDis.pipe.point2 = false;
+        this.propsDis.pipe.point3 = false;
       }
     },
     showProp(obj) {
       this.tabsActive = "props";
-      this.altMarker.cur = 'pos'
+      this.altMarker.cur = "pos";
       if (obj.constructor.name === "StSvgSprite") {
         this.activatedItems.push(obj);
         this.propsForm.pos.x = obj.stattr.pos[0];
@@ -613,6 +789,11 @@ export default {
           this.propsForm.points.p3y = obj.stattr.points[7];
           this.propsDisHandler("StLineSprite3b");
         }
+      } else if (obj.constructor.name === "StPipe") {
+        this.activatedItems.push(obj);
+        this.propsForm.pos.x = obj.stattr.pos[0];
+        this.propsForm.pos.y = obj.stattr.pos[1];
+        this.propsDisHandler("StPipe");
       }
     },
     unactivatedData(obj) {
@@ -630,7 +811,7 @@ export default {
         this.activatedItems.splice(retIndex, 1);
       }
     },
-    propsFormChange(val, type) {
+    propsChange(val, type) {
       function setPoint(item, attr, index, val) {
         let points = [];
         for (let i = 0; i < item.stattr.points.length; i++) {
@@ -666,6 +847,8 @@ export default {
             setPoint(item, attr, 6, val);
           } else if (type === "points3y") {
             setPoint(item, attr, 7, val);
+          } else if (type === "pipePoint1Direction") {
+            attr.point1Direction = val
           }
           item.stattr = attr;
         }
@@ -673,124 +856,132 @@ export default {
     },
     stPosHandlerEx(type) {
       return {
-        'st-pos-handler-cur': type === this.altMarker.cur,
+        "st-pos-handler-cur": type === this.altMarker.cur,
       };
     },
     altMarkerCur(type) {
-      this.altMarker.cur = type
+      this.altMarker.cur = type;
     },
     checkActivated() {
       if (this.activatedItems.length === 0) {
         this.$message({
           dangerouslyUseHTMLString: true,
-          message:
-            '未选中元素',
+          message: "未选中元素",
           duration: 3000,
           center: true,
         });
-        return false
+        return false;
       }
-      return true
+      return true;
     },
     altMarkerPosHandler() {
       if (!this.checkActivated()) {
-        return false
+        return false;
       }
-      if (this.tabsActive !== 'props') {
+      if (this.tabsActive !== "props") {
         this.$message({
           dangerouslyUseHTMLString: true,
-          message:
-            'tab未切换至属性',
+          message: "tab未切换至属性",
           duration: 3000,
           center: true,
         });
-        return false
+        return false;
       }
-      let cur = this.altMarker.cur
+      let cur = this.altMarker.cur;
       for (const item of this.activatedItems) {
         if (item.stattr && item.stattr.constructor.name === "Group") {
           // 图
-          if (cur === 'pos') {
-            this.propsForm.pos.x = this.altMarker.axis.x
-            this.propsForm.pos.y = this.altMarker.axis.y
-            item.stattr.x = this.altMarker.axis.x
-            item.stattr.y = this.altMarker.axis.y
+          if (cur === "pos") {
+            this.propsForm.pos.x = this.altMarker.axis.x;
+            this.propsForm.pos.y = this.altMarker.axis.y;
+            item.stattr.x = this.altMarker.axis.x;
+            item.stattr.y = this.altMarker.axis.y;
           }
         } else if (item.stattr && item.stattr.constructor.name === "Polyline") {
-          if (cur === 'pos') {
-            this.propsForm.pos.x = this.altMarker.axis.x
-            this.propsForm.pos.y = this.altMarker.axis.y
-            item.stattr.x = this.altMarker.axis.x
-            item.stattr.y = this.altMarker.axis.y
-          } else if (cur.indexOf('points') > -1) {
-            let curLast = parseInt(cur.substring(cur.length - 1, cur.length))
-            let oldPoints = item.stattr.points
-            let newPoints = []
-            let attr = {}
-            // 线 
+          if (cur === "pos") {
+            this.propsForm.pos.x = this.altMarker.axis.x;
+            this.propsForm.pos.y = this.altMarker.axis.y;
+            item.stattr.x = this.altMarker.axis.x;
+            item.stattr.y = this.altMarker.axis.y;
+          } else if (cur.indexOf("points") > -1) {
+            let curLast = parseInt(cur.substring(cur.length - 1, cur.length));
+            let oldPoints = item.stattr.points;
+            let newPoints = [];
+            let attr = {};
+            // 线
             // 节点
             if (curLast === 1) {
-              this.propsForm.points.p1x = this.altMarker.axis.x - item.stattr.x
-              this.propsForm.points.p1y = this.altMarker.axis.x - item.stattr.y
+              this.propsForm.points.p1x = this.altMarker.axis.x - item.stattr.x;
+              this.propsForm.points.p1y = this.altMarker.axis.x - item.stattr.y;
             } else if (curLast === 2) {
-              this.propsForm.points.p2x = this.altMarker.axis.x - item.stattr.x
-              this.propsForm.points.p2y = this.altMarker.axis.x - item.stattr.y
+              this.propsForm.points.p2x = this.altMarker.axis.x - item.stattr.x;
+              this.propsForm.points.p2y = this.altMarker.axis.x - item.stattr.y;
             } else if (curLast === 3) {
-              this.propsForm.points.p3x = this.altMarker.axis.x - item.stattr.x
-              this.propsForm.points.p3y = this.altMarker.axis.x - item.stattr.y
+              this.propsForm.points.p3x = this.altMarker.axis.x - item.stattr.x;
+              this.propsForm.points.p3y = this.altMarker.axis.x - item.stattr.y;
             }
-            
+
             for (let i = 0; i < oldPoints.length; i++) {
               const op = oldPoints[i];
               if (i === curLast * 2) {
-                newPoints.push(this.altMarker.axis.x - item.stattr.x)
+                newPoints.push(this.altMarker.axis.x - item.stattr.x);
               } else if (i === curLast * 2 + 1) {
-                newPoints.push(this.altMarker.axis.y - item.stattr.y)
+                newPoints.push(this.altMarker.axis.y - item.stattr.y);
               } else {
-                newPoints.push(op)
+                newPoints.push(op);
               }
             }
-            attr.points = newPoints
-            item.stattr = attr
+            attr.points = newPoints;
+            item.stattr = attr;
           }
-          
-          
         }
-        
       }
-      
     },
     addAnimation() {
       if (!this.checkActivated()) {
-        return false
+        return false;
       }
-      this.animationAdd.show = true
-      this.animationAdd.angleShow = false
-      this.animationAdd.durationShow = false
-      this.animationAdd.type = ''
+      this.animationAdd.show = true;
+      this.animationAdd.angleShow = false;
+      this.animationAdd.durationShow = false;
+      this.animationAdd.type = "";
     },
     saveAnimation() {
       for (const activated of this.activatedItems) {
-        if (this.animationAdd.type === 'rotate') {
-          activated.rotate(this.animationAdd.angle, this.animationAdd.duration)
+        if (this.animationAdd.type === "rotate") {
+          activated.rotate(this.animationAdd.angle, this.animationAdd.duration);
         }
       }
     },
     animationAddTypeChange(val) {
-      if (val === 'rotate') {
-        this.animationAdd.angleShow = true
+      if (val === "rotate") {
+        this.animationAdd.angleShow = true;
       }
     },
     animationAddAngleChange(val) {
-      if (val !== '') {
-        this.animationAdd.durationShow = true
+      if (val !== "") {
+        this.animationAdd.durationShow = true;
       }
     },
     animationAddDurationChange(val) {
-      if (val !== '') {
-        this.animationAdd.btnAddShow = false
+      if (val !== "") {
+        this.animationAdd.btnAddShow = false;
       }
-    }
+    },
+    /* pauseAllAnimation() {
+      for (const activated of this.activatedItems) {
+        if (typeof activated.pauseAnimation === "function") {
+          activated.pauseAnimation()
+        }
+      }
+    },
+    playAllAnimation() {
+      for (const activated of this.activatedItems) {
+        if (typeof activated.playAnimation === "function") {
+          activated.playAnimation()
+        }
+      }
+    } */
   },
   created() {
     // ============= svgs ==============
@@ -824,13 +1015,13 @@ export default {
       });
     }
 
-    this.animationAdd.durationOpts = []
+    this.animationAdd.durationOpts = [];
     for (let i = 0; i < 50; i++) {
-      let d = 500
+      let d = 500;
       this.animationAdd.durationOpts.push({
         value: 500 + i * 100,
-        label: 500 + i * 100 + 'ms'
-      })
+        label: 500 + i * 100 + "ms",
+      });
     }
   },
   mounted() {
@@ -884,10 +1075,21 @@ export default {
 .st-editor {
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  div {
+    color: #fff;
+  }
+
+  &-btn-totalscale {
+    position: absolute;
+    right: 130px;
+    top: 30px;
+    z-index: 200;
+  }
   &-btn-components {
     position: absolute;
     margin: 30px;
-    z-index: 9999;
+    z-index: 200;
     &-collapse {
       width: 90%;
       height: 50px;
@@ -896,16 +1098,18 @@ export default {
     &-svg {
       width: 60px;
       height: 50px;
+      background-color: #fff;
     }
     &-line {
       width: 60px;
       height: 50px;
+      background-color: #fff;
     }
   }
   &-canvas {
     position: absolute;
     width: 1440px;
-    height: 750px;
+    height: 810px;
     // border: 1px solid black;
     z-index: 100;
   }
@@ -918,8 +1122,8 @@ export default {
     position: absolute;
     width: 20%;
     height: 100%;
-    background-color: white;
-    box-shadow: 1px 0px 8px #888888;
+    background-color: #252526;
+    box-shadow: 1px 0px 8px #252526;
     z-index: 1000;
     overflow: hidden;
     &-icon {
@@ -945,7 +1149,6 @@ export default {
     border-radius: 5px;
     padding: 15px;
   }
-  
 }
 </style>
 <style lang="scss">
@@ -976,16 +1179,21 @@ export default {
       width: 58px;
     }
   }
-  .st-pos-handler,.el-button--mini{
+  .st-pos-handler,
+  .el-button--mini {
     padding: 7px 9px;
     margin: 0 8px;
   }
   .st-pos-handler-cur {
-    background-color: aquamarine
+    background-color: aquamarine;
   }
-  .el-select-dropdown .el-popper{
+  .el-select-dropdown .el-popper {
     z-index: 10000;
   }
-  
+  .st-tabs {
+    div {
+      background-color: #252526;
+    }
+  }
 }
 </style>

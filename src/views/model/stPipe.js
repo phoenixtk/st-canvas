@@ -2,6 +2,11 @@ import { Group, Path, Block, Gradient, Sprite} from "spritejs";
 import tool from "../utils/tool";
 
 // const setDefault = Symbol.for('spritejs_setAttribute');
+const pipeCornerUrl = '/img/wanGuan.png';
+const cornerCfg = {
+  size: 26,
+  posfix: 4,
+}
 
 class StPipe extends Group {
   constructor(attrs = {}, _vue) {
@@ -25,7 +30,6 @@ class StPipe extends Group {
         colors: [
           { offset: 0, color: 'rgba(120, 113, 112, 0.7)' },
           { offset: 0.5, color: '#fff' },
-          // { offset: 0.7, color: '#fff' },
           { offset: 1, color: 'rgba(120, 113, 112, 0.7)' },
         ],
       }),
@@ -36,16 +40,23 @@ class StPipe extends Group {
     });
     this.append(stPipeBg);
 
-    const pipeCornerUrl = '/img/wanGuan.png';
-    let stPipeCorner = new Sprite({
-      pos: [500 + 26 / 2, 5],
-      size: [26, 26],
-      anchor: [0.5, 0.5],
-      rotate: 90,
-      texture: pipeCornerUrl,
+    this.stPipeBlock = new Block({
+      bgcolor: new Gradient({
+        vector: [0, 0, 0, 8],
+        colors: [
+          { offset: 0, color: 'rgba(75, 0, 130, 0.7)' },
+          { offset: 0.5, color: 'rgba(75, 0, 130, 0.4)' },
+          { offset: 1, color: 'rgba(75, 0, 130, 0.7)' },
+        ],
+      }),
+      pos: [0, 0],
+      size: [14, 8],
+      anchor: [0, 0.5],
       //   borderRadius: 15,
+      borderRadius: 1,
     });
-    this.append(stPipeCorner);
+
+    // this.addPipeCorner('down', [500, 0])
 
     if (attrs.mode === 'edit') {
       this.addEventListener("mousedown", (evt) => {
@@ -110,50 +121,65 @@ class StPipe extends Group {
     if (attr.scale) {
       this.attributes.scale = attr.scale
     }
+    if (attr.point1Direction) {
+      console.log('attr.point1Direction changed');
+    }
   }
 
   get stattr() {
     return this.attributes;
   }
 
-  stanimate() {
-    let stPipeBlock = new Block({
-      bgcolor: new Gradient({
-        vector: [0, 0, 0, 8],
-        colors: [
-          { offset: 0, color: 'rgba(75, 0, 130, 0.7)' },
-          { offset: 0.5, color: 'rgba(75, 0, 130, 0.4)' },
-          { offset: 1, color: 'rgba(75, 0, 130, 0.7)' },
-        ],
-      }),
-      pos: [0, 0],
-      size: [14, 8],
-      anchor: [0, 0.5],
+  addPipeCorner(direction, pPos) {
+    let rotate = 0
+    let pos = []
+    if (direction === 'down') {
+      pos.push(pPos[0] + cornerCfg.size / 2 + cornerCfg.posfix)
+      pos.push(pPos[1])
+      rotate = 90
+    }
+    let stPipeCorner = new Sprite({
+      pos,
+      size: [cornerCfg.size, cornerCfg.size],
+      anchor: [0.3, 0.3],
+      rotate,
+      texture: pipeCornerUrl,
       //   borderRadius: 15,
-      borderRadius: 1,
     });
-    // this.append(stPipeBlock);
+    this.append(stPipeCorner);
+  }
+
+  stanimate() {
 
     this.stInterval = setInterval(() => {
-      let pipeBlock = stPipeBlock.cloneNode(true)
+      let pipeBlock = this.stPipeBlock.cloneNode(true)
       this.append(pipeBlock);
-      let duration = 6000
+      let speed = 0.083
       pipeBlock.animate([
         // { offsetDistance: 0 },
         // { offsetDistance: 1 },
         {pos: [0, 0]},
-        {pos: [500 - 26 / 2, 0]},
+        {pos: [500 - cornerCfg.size / 2, 0]},
       ], {
-        duration: duration,
+        duration: 500 / speed,
         // direction: 'alternate',
         // iterations: Infinity,
         // easing: 'step-end',
       });
       setTimeout(() => {
         pipeBlock.remove()
-      }, duration)
+      }, 500 / speed)
     }, 380);
   }
+
+  /* pauseAnimation() {
+    clearInterval(this.stInterval)
+    this.stInterval = null
+  }
+
+  playAnimation() {
+    this.stanimate()
+  } */
 }
 
 export default StPipe

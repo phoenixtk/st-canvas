@@ -1,4 +1,5 @@
 const svg = {}
+/* 放缩 */
 svg.getScale = function () {
   return {
     COMPONENTS_SVG_SCALE: 50 / 1024,
