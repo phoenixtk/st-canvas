@@ -219,6 +219,17 @@
               </el-button>
             </el-col>
           </el-row>
+          <el-row v-show="propsDis.pipe.addBtn">
+            <el-col :span="24" style="text-align: right">
+              <el-button
+                class="st-pipe-addBtn"
+                size="mini"
+                icon="el-icon-plus"
+                @click="pipePartAdd"
+              >
+              </el-button>
+            </el-col>
+          </el-row>
           <el-row v-show="propsDis.pipe.point1">
             <el-col :span="5">顶点1：</el-col>
             <el-col :span="7">
@@ -244,7 +255,7 @@
               <el-input
                 size="mini"
                 v-model="propsForm.pipe.point1.length"
-                @change="(val) => propsChange(val, 'points1y')"
+                @change="(val) => propsChange(val, 'pipePoint1Length')"
               ></el-input>
             </el-col>
             <el-col :span="4">
@@ -253,7 +264,7 @@
                 :class="stPosHandlerEx('points1')"
                 size="mini"
                 icon="el-icon-edit"
-                @click="altMarkerCur('points1')"
+                @click="altMarkerCur('pipePoints1')"
               >
               </el-button>
             </el-col>
@@ -394,6 +405,7 @@ export default {
         point2: false,
         point3: false,
         pipe: {
+          addBtn: false,
           point1: false,
           point2: false,
           point3: false,
@@ -416,7 +428,7 @@ export default {
         },
         pipe: {
           point1: {
-            direction: 'right',
+            direction: "right",
             length: 500,
           },
           point2: {
@@ -494,8 +506,8 @@ export default {
             value: "left",
             label: "左",
           },
-        ]
-      }
+        ],
+      },
     };
   },
   computed: {
@@ -645,7 +657,6 @@ export default {
       this.layer.append(stPipe);
       this.unactiveAll();
       stPipe.active(true);
-      stPipe.stanimate();
     },
     tabsActiveClick(tab, event) {
       // console.log(tab, event);
@@ -729,6 +740,7 @@ export default {
         this.propsDis.point1 = false;
         this.propsDis.point2 = false;
         this.propsDis.point3 = false;
+        this.propsDis.pipe.addBtn = false;
         this.propsDis.pipe.point1 = false;
         this.propsDis.pipe.point2 = false;
         this.propsDis.pipe.point3 = false;
@@ -738,6 +750,7 @@ export default {
         this.propsDis.point1 = true;
         this.propsDis.point2 = false;
         this.propsDis.point3 = false;
+        this.propsDis.pipe.addBtn = false;
         this.propsDis.pipe.point1 = false;
         this.propsDis.pipe.point2 = false;
         this.propsDis.pipe.point3 = false;
@@ -747,6 +760,7 @@ export default {
         this.propsDis.point1 = true;
         this.propsDis.point2 = true;
         this.propsDis.point3 = true;
+        this.propsDis.pipe.addBtn = false;
         this.propsDis.pipe.point1 = false;
         this.propsDis.pipe.point2 = false;
         this.propsDis.pipe.point3 = false;
@@ -756,6 +770,7 @@ export default {
         this.propsDis.point1 = false;
         this.propsDis.point2 = false;
         this.propsDis.point3 = false;
+        this.propsDis.pipe.addBtn = true;
         this.propsDis.pipe.point1 = true;
         this.propsDis.pipe.point2 = false;
         this.propsDis.pipe.point3 = false;
@@ -848,7 +863,11 @@ export default {
           } else if (type === "points3y") {
             setPoint(item, attr, 7, val);
           } else if (type === "pipePoint1Direction") {
-            attr.point1Direction = val
+            attr.point1Direction = val;
+            attr.point1Length = this.propsForm.pipe.point1.length;
+          } else if (type === "pipePoint1Length") {
+            attr.point1Direction = this.propsForm.pipe.point1.direction;
+            attr.point1Length = val;
           }
           item.stattr = attr;
         }
@@ -890,12 +909,55 @@ export default {
       let cur = this.altMarker.cur;
       for (const item of this.activatedItems) {
         if (item.stattr && item.stattr.constructor.name === "Group") {
-          // 图
+          // 图及其他
           if (cur === "pos") {
             this.propsForm.pos.x = this.altMarker.axis.x;
             this.propsForm.pos.y = this.altMarker.axis.y;
             item.stattr.x = this.altMarker.axis.x;
             item.stattr.y = this.altMarker.axis.y;
+          }
+          //
+          if (cur === "pipePoints1") {
+            let x0 = this.propsForm.pos.x;
+            let y0 = this.propsForm.pos.y;
+            let x1 = this.altMarker.axis.x;
+            let y1 = this.altMarker.axis.y;
+            // console.log(x0, y0, x1, y1);
+            let deltaX = x1 - x0;
+            let deltaY = y1 - y0;
+            let direction = "";
+            let length = "";
+            if (Math.abs(deltaY) > Math.abs(deltaX)) {
+              if (deltaY > 0) {
+                direction = "down";
+              } else {
+                direction = "up";
+              }
+              length = Math.abs(deltaY);
+            } else {
+              if (deltaX > 0) {
+                direction = "right";
+              } else {
+                direction = "left";
+              }
+              length = Math.abs(deltaX);
+            }
+
+            if (length < 50) {
+              this.$message({
+                dangerouslyUseHTMLString: true,
+                message: "与原点过近",
+                duration: 1000,
+                center: true,
+              });
+              return false;
+            }
+            this.propsForm.pipe.point1.direction = direction;
+            this.propsForm.pipe.point1.length = length;
+            let attr = {};
+            attr.point1Direction = direction;
+            attr.point1Length = length;
+            item.stattr = attr;
           }
         } else if (item.stattr && item.stattr.constructor.name === "Polyline") {
           if (cur === "pos") {
@@ -982,6 +1044,13 @@ export default {
         }
       }
     } */
+    pipePartAdd() {
+      for (const activated of this.activatedItems) {
+        if (typeof activated.strender === "function") {
+          activated.strender(2)
+        }
+      }
+    }
   },
   created() {
     // ============= svgs ==============
