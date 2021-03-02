@@ -22,20 +22,22 @@ function getDirectNext(preDirect) {
 }
 
 function getPos(type, index) {
-  // console.log(index);
-  // console.log(this);
   if (type === 'pipe') {
     if (index === 0) {
       return [0, 0]
     } else if (index === 1) {
-      if (this.directArr[0] === 'right') {
-        return [this.lengthArr[0] + cornerCfg.posfix, cornerCfg.size / 2 + cornerCfg.posfix]
-      } else if (this.directArr[0] === 'left') {
-        return [- (this.lengthArr[0] + cornerCfg.posfix), cornerCfg.size / 2 + cornerCfg.posfix]
-      } else if (this.directArr[0] === 'up') {
-        return [cornerCfg.size / 2 + cornerCfg.posfix, - (this.lengthArr[0] + cornerCfg.posfix)]
-      } else if (this.directArr[0] === 'down') {
-        return [cornerCfg.size / 2 + cornerCfg.posfix, this.lengthArr[0] + cornerCfg.posfix]
+      if (this.directArr[1] === 'down' || this.directArr[1] === 'up') {
+        if (this.directArr[0] === 'right') {
+          return [this.lengthArr[0] + cornerCfg.posfix, (this.directArr[1] === 'up' ? -1 : 1) * (cornerCfg.size / 2 + cornerCfg.posfix)]
+        } else if (this.directArr[0] === 'left') {
+          return [- (this.lengthArr[0] + cornerCfg.posfix), (this.directArr[1] === 'up' ? -1 : 1) * (cornerCfg.size / 2 + cornerCfg.posfix)]
+        }
+      } else if (this.directArr[1] === 'right' || this.directArr[1] === 'left') {
+        if (this.directArr[0] === 'up') {
+          return [(this.directArr[1] === 'left' ? -1 : 1) * (cornerCfg.size / 2 + cornerCfg.posfix), - (this.lengthArr[0] + cornerCfg.posfix)]
+        } else if (this.directArr[0] === 'down') {
+          return [(this.directArr[1] === 'left' ? -1 : 1) * (cornerCfg.size / 2 + cornerCfg.posfix), this.lengthArr[0] + cornerCfg.posfix]
+        }
       }
     }
   }
@@ -110,6 +112,11 @@ class StPipe extends Group {
       this.directArr[0] = attr.point1Direction
       this.lengthArr[0] = attr.point1Length
       this.strender(1)
+    } else if (attr.point2Direction && attr.point2Length) {
+      // console.log(attr.point2Direction, attr.point2Length);
+      this.directArr[1] = attr.point2Direction
+      this.lengthArr[1] = attr.point2Length
+      this.strender(2)
     }
   }
 
@@ -119,14 +126,14 @@ class StPipe extends Group {
 
   active(b) {
     if (b) {
-      this.attributes.borderWidth = 1 / this.attributes.scale[0],
-        this.attributes.borderColor = 'blue'
+      this.attributes.borderWidth = 1 / this.attributes.scale[0]
+      this.attributes.borderColor = 'blue'
       this.actived = true
       // 暂时只处理一个选中的时候
       this.$editor.showProp(this)
     } else {
-      this.attributes.borderWidth = 0,
-        this.attributes.borderColor = 'white'
+      this.attributes.borderWidth = 0
+      this.attributes.borderColor = 'white'
       this.actived = false
       this.$editor.unactivatedData(this)
     }
@@ -165,14 +172,14 @@ class StPipe extends Group {
     if (partsCnt === 1) {
       length1 = this.lengthArr[0] === undefined ? 500 : this.lengthArr[0]
     } else if (partsCnt === 2) {
-      this.directArr[1] = getDirectNext(this.directArr[0])
+      this.directArr[1] = this.directArr[1] === undefined ? getDirectNext(this.directArr[0]) : this.directArr[1]
       this.lengthArr[1] = this.lengthArr[1] === undefined ? this.lengthArr[0] : this.lengthArr[1]
       length1 = this.lengthArr[0] - cornerCfg.size / 2
       length2 = this.lengthArr[1] - cornerCfg.size / 2
     } else if (partsCnt === 3) {
-      this.directArr[1] = getDirectNext(this.directArr[0])
+      this.directArr[1] = this.directArr[1] === undefined ? getDirectNext(this.directArr[0]) : this.directArr[1]
       this.lengthArr[1] = this.lengthArr[1] === undefined ? this.lengthArr[0] : this.lengthArr[1]
-      this.directArr[2] = getDirectNext(this.directArr[1])
+      this.directArr[2] = this.directArr[2] === undefined ? getDirectNext(this.directArr[1]) : this.directArr[2]
       this.lengthArr[2] = this.lengthArr[2] === undefined ? this.lengthArr[1] : this.lengthArr[2]
       length1 = this.lengthArr[0] - cornerCfg.size / 2
       length2 = this.lengthArr[1] - cornerCfg.size
@@ -204,6 +211,7 @@ class StPipe extends Group {
     let size1 = null
     let size2 = null
     let anchor = null
+    // console.log(this.directArr[partsCur]);
     if (this.directArr[partsCur] === 'up' || this.directArr[partsCur] === 'down') {
       vector = [0, 0, 1, 0]
       size1 = [pipeDiameter, (this.directArr[partsCur] === 'up' ? -1 : 1) * length]
@@ -277,12 +285,13 @@ class StPipe extends Group {
   }
 
   addCorner(partsCur, length) {
+    // console.log(partsCur, length, this.directArr);
     let curDirect = null
     let preDirect = this.directArr[partsCur - 1]
     if (preDirect === 'up' || preDirect === 'down') {
-      curDirect = 'right'
+      curDirect = this.directArr[partsCur] === undefined ? 'right' : this.directArr[partsCur]
     } else {
-      curDirect = 'down'
+      curDirect = this.directArr[partsCur] === undefined ? 'down' : this.directArr[partsCur]
     }
 
     let rotate = 0
@@ -299,6 +308,17 @@ class StPipe extends Group {
         pos.push(0)
         rotate = 0
       }
+    } else if (curDirect === 'up') {
+      if (preDirect === 'right') {
+        console.log('right up 23434346668');
+        pos.push(lengthFact)
+        pos.push(0)
+        rotate = 180
+      } else if (preDirect === 'left') {
+        pos.push(-lengthFact)
+        pos.push(0)
+        rotate = 270
+      }
     } else if (curDirect === 'right') {
       if (preDirect === 'up') {
         pos.push(0)
@@ -308,6 +328,16 @@ class StPipe extends Group {
         pos.push(0)
         pos.push(lengthFact)
         rotate = 270
+      }
+    } else if (curDirect === 'left') {
+      if (preDirect === 'up') {
+        pos.push(0)
+        pos.push(-lengthFact)
+        rotate = 90
+      } else if (preDirect === 'down') {
+        pos.push(0)
+        pos.push(lengthFact)
+        rotate = 180
       }
     }
 
@@ -324,7 +354,6 @@ class StPipe extends Group {
 
   stanimate(partsCnt, length1, length2, length3) {
     // console.log(partsCnt, length1, length2, length3);
-    // let length1 = partsCnt !== 1 ? this.lengthArr[0] - cornerCfg.size / 2: this.lengthArr[0]
     this.stInterval = setInterval(() => {
       let pipeBlock1 = null
       let pipeBlock2 = null

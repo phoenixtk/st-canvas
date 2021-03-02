@@ -240,7 +240,7 @@
                 @change="(val) => propsChange(val, 'pipePoint1Direction')"
               >
                 <el-option
-                  v-for="item in pipeOpt.directionOpts"
+                  v-for="item in pipeOpt.direction1Opts"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -261,10 +261,88 @@
             <el-col :span="4">
               <el-button
                 class="st-pos-handler"
-                :class="stPosHandlerEx('points1')"
+                :class="stPosHandlerEx('pipePoints1')"
                 size="mini"
                 icon="el-icon-edit"
                 @click="altMarkerCur('pipePoints1')"
+              >
+              </el-button>
+            </el-col>
+          </el-row>
+          <el-row v-show="propsDis.pipe.point2">
+            <el-col :span="5">顶点2：</el-col>
+            <el-col :span="7">
+              <el-select
+                v-model="propsForm.pipe.point2.direction"
+                size="mini"
+                placeholder="方向"
+                @change="(val) => propsChange(val, 'pipePoint2Direction')"
+              >
+                <el-option
+                  v-for="item in pipeOpt.direction2Opts"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-col>
+            <el-col :span="3" style="text-align: right; padding-right: 10px">
+              长
+            </el-col>
+            <el-col :span="4">
+              <el-input
+                size="mini"
+                v-model="propsForm.pipe.point2.length"
+                @change="(val) => propsChange(val, 'pipePoint2Length')"
+              ></el-input>
+            </el-col>
+            <el-col :span="4">
+              <el-button
+                class="st-pos-handler"
+                :class="stPosHandlerEx('pipePoints2')"
+                size="mini"
+                icon="el-icon-edit"
+                @click="altMarkerCur('pipePoints2')"
+              >
+              </el-button>
+            </el-col>
+          </el-row>
+          <el-row v-show="propsDis.pipe.point3">
+            <el-col :span="5">顶点3：</el-col>
+            <el-col :span="7">
+              <el-select
+                v-model="propsForm.pipe.point3.direction"
+                size="mini"
+                placeholder="方向"
+                @change="(val) => propsChange(val, 'pipePoint3Direction')"
+              >
+                <el-option
+                  v-for="item in pipeOpt.direction3Opts"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-col>
+            <el-col :span="3" style="text-align: right; padding-right: 10px">
+              长
+            </el-col>
+            <el-col :span="4">
+              <el-input
+                size="mini"
+                v-model="propsForm.pipe.point3.length"
+                @change="(val) => propsChange(val, 'pipePoint3Length')"
+              ></el-input>
+            </el-col>
+            <el-col :span="4">
+              <el-button
+                class="st-pos-handler"
+                :class="stPosHandlerEx('pipePoints3')"
+                size="mini"
+                icon="el-icon-edit"
+                @click="altMarkerCur('pipePoints3')"
               >
               </el-button>
             </el-col>
@@ -489,7 +567,7 @@ export default {
         durationOpts: [],
       },
       pipeOpt: {
-        directionOpts: [
+        direction1Opts: [
           {
             value: "up",
             label: "上",
@@ -507,6 +585,8 @@ export default {
             label: "左",
           },
         ],
+        direction2Opts: [],
+        direction3Opts: [],
       },
     };
   },
@@ -809,6 +889,20 @@ export default {
         this.propsForm.pos.x = obj.stattr.pos[0];
         this.propsForm.pos.y = obj.stattr.pos[1];
         this.propsDisHandler("StPipe");
+        this.propsForm.pipe.point1.direction = obj.directArr[0];
+        this.propsForm.pipe.point1.length = obj.lengthArr[0];
+        if (obj.directArr.length === 2) {
+          this.propsDis.pipe.point2 = true;
+          this.propsForm.pipe.point2.direction = obj.directArr[1];
+          this.propsForm.pipe.point2.length = obj.lengthArr[1];
+        } else if (obj.directArr.length === 3) {
+          this.propsDis.pipe.point2 = true;
+          this.propsDis.pipe.point3 = true;
+          this.propsForm.pipe.point2.direction = obj.directArr[1];
+          this.propsForm.pipe.point2.length = obj.lengthArr[1];
+          this.propsForm.pipe.point3.direction = obj.directArr[2];
+          this.propsForm.pipe.point3.length = obj.lengthArr[2];
+        }
       }
     },
     unactivatedData(obj) {
@@ -916,10 +1010,37 @@ export default {
             item.stattr.x = this.altMarker.axis.x;
             item.stattr.y = this.altMarker.axis.y;
           }
-          //
-          if (cur === "pipePoints1") {
-            let x0 = this.propsForm.pos.x;
-            let y0 = this.propsForm.pos.y;
+          // console.log(cur);
+          if (
+            cur === "pipePoints1" ||
+            cur === "pipePoints2" ||
+            cur === "pipePoints3"
+          ) {
+            let x0 = null;
+            let y0 = null;
+            if (cur === "pipePoints1") {
+              x0 = this.propsForm.pos.x;
+              y0 = this.propsForm.pos.y;
+            } else if (cur === "pipePoints2") {
+              // console.log(item.directArr[0], item.lengthArr[0]);
+              if (item.directArr[0] === 'right') {
+                x0 = this.propsForm.pos.x + item.lengthArr[0];
+                y0 = this.propsForm.pos.y;
+              } else if (item.directArr[0] === 'left') {
+                x0 = this.propsForm.pos.x - item.lengthArr[0];
+                y0 = this.propsForm.pos.y;
+              } else if (item.directArr[0] === 'down') {
+                x0 = this.propsForm.pos.x;
+                y0 = this.propsForm.pos.y + item.lengthArr[0];
+              } else if (item.directArr[0] === 'up') {
+                x0 = this.propsForm.pos.x;
+                y0 = this.propsForm.pos.y - item.lengthArr[0];
+              }
+              
+            } else if (cur === "pipePoints3") {
+              x0 = this.propsForm.pos.x;
+              y0 = this.propsForm.pos.y;
+            }
             let x1 = this.altMarker.axis.x;
             let y1 = this.altMarker.axis.y;
             // console.log(x0, y0, x1, y1);
@@ -952,11 +1073,24 @@ export default {
               });
               return false;
             }
-            this.propsForm.pipe.point1.direction = direction;
-            this.propsForm.pipe.point1.length = length;
+
             let attr = {};
-            attr.point1Direction = direction;
-            attr.point1Length = length;
+            if (cur === "pipePoints1") {
+              attr.point1Direction = direction;
+              attr.point1Length = length;
+              this.propsForm.pipe.point1.direction = direction;
+              this.propsForm.pipe.point1.length = length;
+            } else if (cur === "pipePoints2") {
+              attr.point2Direction = direction;
+              attr.point2Length = length;
+              this.propsForm.pipe.point2.direction = direction;
+              this.propsForm.pipe.point2.length = length;
+            } else if (cur === "pipePoints3") {
+              attr.point3Direction = direction;
+              attr.point3Length = length;
+              this.propsForm.pipe.point3.direction = direction;
+              this.propsForm.pipe.point3.length = length;
+            }
             item.stattr = attr;
           }
         } else if (item.stattr && item.stattr.constructor.name === "Polyline") {
@@ -1047,10 +1181,74 @@ export default {
     pipePartAdd() {
       for (const activated of this.activatedItems) {
         if (typeof activated.strender === "function") {
-          activated.strender(2)
+          if (activated.directArr.length === 1) {
+            activated.strender(2);
+            this.propsDis.pipe.point2 = true;
+            this.propsForm.pipe.point2.length = activated.lengthArr[0];
+            if (
+              activated.directArr[0] === "up" ||
+              activated.directArr[0] === "down"
+            ) {
+              this.pipeOpt.direction2Opts = [
+                {
+                  value: "right",
+                  label: "右",
+                },
+                {
+                  value: "left",
+                  label: "左",
+                },
+              ];
+              this.propsForm.pipe.point2.direction = "right";
+            } else {
+              this.pipeOpt.direction2Opts = [
+                {
+                  value: "up",
+                  label: "上",
+                },
+                {
+                  value: "down",
+                  label: "下",
+                },
+              ];
+              this.propsForm.pipe.point2.direction = "down";
+            }
+          } else if (activated.directArr.length === 2) {
+            activated.strender(3);
+            this.propsDis.pipe.point3 = true;
+            this.propsForm.pipe.point3.length = activated.lengthArr[2];
+            if (
+              activated.directArr[2] === "up" ||
+              activated.directArr[2] === "down"
+            ) {
+              this.pipeOpt.direction3Opts = [
+                {
+                  value: "right",
+                  label: "右",
+                },
+                {
+                  value: "left",
+                  label: "左",
+                },
+              ];
+              this.propsForm.pipe.point3.direction = "right";
+            } else {
+              this.pipeOpt.direction3Opts = [
+                {
+                  value: "up",
+                  label: "上",
+                },
+                {
+                  value: "down",
+                  label: "下",
+                },
+              ];
+              this.propsForm.pipe.point3.direction = "down";
+            }
+          }
         }
       }
-    }
+    },
   },
   created() {
     // ============= svgs ==============
@@ -1254,7 +1452,7 @@ export default {
     margin: 0 8px;
   }
   .st-pos-handler-cur {
-    background-color: aquamarine;
+    background-color: #4caf50;
   }
   .el-select-dropdown .el-popper {
     z-index: 10000;
