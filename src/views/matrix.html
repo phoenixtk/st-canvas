@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>理解矩阵变换</title>
+    <style type="text/css">
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      .box {
+        /* background: green; */
+        background-image: linear-gradient(to right, rgba(255,0,0,0), rgba(255,0,0,1));
+        width: 200px;
+        height: 200px;
+        margin: 50px auto;
+      }
+
+      /* 理解旋转是如何使用前四个参数的 */
+      .b1 {
+        transform: rotate(30deg);
+      }
+
+      /* 矩阵具体写法 */
+      .b2 {
+        transform: matrix(0.86603, 0.5, -0.5, 0.86603, 1, 1);
+      }
+
+      /* 用斜切和变形来模拟,同时这里的参数是对应矩阵里的参数 ，斜切中的30deg的意思是,矩阵中的 sin30*  和 -sin30* 这两个斜切参数*/
+      .b3 {
+        transform: skew(-30deg, 30deg) scale(0.86603, 0.86603);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box b1"></div>
+    <div class="box b2"></div>
+    <div class="box b3"></div>
+    <div class="box"></div>
+  </body>
+</html>

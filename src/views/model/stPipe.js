@@ -196,7 +196,7 @@ class StPipe extends Group {
       this.addPipe(partsCnt, 0, length1)
       this.addCorner(1, length1)
       this.addPipe(partsCnt, 1, length2)
-      this.addCorner(2, length2)
+      this.addCorner(2, length1, length2)
       this.addPipe(partsCnt, 2, length3)
     }
 
@@ -284,10 +284,14 @@ class StPipe extends Group {
 
   }
 
-  addCorner(partsCur, length) {
+  addCorner(partsCur, length1, length2) {
     // console.log(partsCur, length, this.directArr);
     let curDirect = null
     let preDirect = this.directArr[partsCur - 1]
+    let pre2Direct = null
+    if (partsCur === 2) {
+      pre2Direct = this.directArr[partsCur - 2]
+    }
     if (preDirect === 'up' || preDirect === 'down') {
       curDirect = this.directArr[partsCur] === undefined ? 'right' : this.directArr[partsCur]
     } else {
@@ -296,47 +300,87 @@ class StPipe extends Group {
 
     let rotate = 0
     let pos = []
-    // console.log(preDirect, curDirect);
-    let lengthFact = length + cornerCfg.size / 2 + cornerCfg.posfix
+    console.log(pre2Direct, preDirect, curDirect);
+    let length1Fact = length1 + cornerCfg.size / 2 + cornerCfg.posfix
+    let length2Fact = length2 + cornerCfg.size / 2 + cornerCfg.posfix
     if (curDirect === 'down') {
       if (preDirect === 'right') {
-        pos.push(lengthFact)
-        pos.push(0)
+        if (partsCur === 1) {
+          pos.push(length1Fact)
+          pos.push(0)
+        } else if (partsCur === 2) {
+          pos.push(length2Fact)
+          pos.push((pre2Direct === 'up'? -1: 1) * length1Fact)
+        }
         rotate = 90
       } else if (preDirect === 'left') {
-        pos.push(-lengthFact)
-        pos.push(0)
+        if (partsCur === 1) {
+          pos.push(-length1Fact)
+          pos.push(0)
+        } else if (partsCur === 2) {
+          pos.push(-length2Fact)
+          pos.push((pre2Direct === 'up'? -1: 1) * length1Fact)
+        }
         rotate = 0
       }
     } else if (curDirect === 'up') {
       if (preDirect === 'right') {
-        console.log('right up 23434346668');
-        pos.push(lengthFact)
-        pos.push(0)
+        if (partsCur === 1) {
+          pos.push(length1Fact)
+          pos.push(0)
+        } else if (partsCur === 2) {
+          pos.push(length2Fact)
+          pos.push((pre2Direct === 'up'? -1: 1) * length1Fact)
+        }
         rotate = 180
       } else if (preDirect === 'left') {
-        pos.push(-lengthFact)
-        pos.push(0)
+        if (partsCur === 1) {
+          pos.push(-length1Fact)
+          pos.push(0)
+        } else if (partsCur === 2) {
+          pos.push(length2Fact)
+          pos.push((pre2Direct === 'up'? -1: 1) * length1Fact)
+        }
         rotate = 270
       }
     } else if (curDirect === 'right') {
       if (preDirect === 'up') {
-        pos.push(0)
-        pos.push(-lengthFact)
+        if (partsCur === 1) {
+          pos.push(0)
+          pos.push(-length1Fact)
+        } else if (partsCur === 2) {
+          pos.push((pre2Direct === 'left'? -1: 1) * length1Fact)
+          pos.push(-length2Fact)
+        }
         rotate = 0
       } else if (preDirect === 'down') {
-        pos.push(0)
-        pos.push(lengthFact)
+        if (partsCur === 1) {
+          pos.push(0)
+          pos.push(length1Fact)
+        } else if (partsCur === 2) {
+          pos.push((pre2Direct === 'left'? -1: 1) * (this.lengthArr[0] + cornerCfg.posfix))
+          pos.push(this.lengthArr[1] + cornerCfg.posfix * 2)
+        }
         rotate = 270
       }
     } else if (curDirect === 'left') {
       if (preDirect === 'up') {
-        pos.push(0)
-        pos.push(-lengthFact)
+        if (partsCur === 1) {
+          pos.push(0)
+          pos.push(-length1Fact)
+        } else if (partsCur === 2) {
+          pos.push((pre2Direct === 'left'? -1: 1) * length1Fact)
+          pos.push(-length2Fact)
+        }
         rotate = 90
       } else if (preDirect === 'down') {
-        pos.push(0)
-        pos.push(lengthFact)
+        if (partsCur === 1) {
+          pos.push(0)
+          pos.push(length1Fact)
+        } else if (partsCur === 2) {
+          pos.push((pre2Direct === 'left'? -1: 1) * length1Fact)
+          pos.push(length2Fact)
+        }
         rotate = 180
       }
     }
